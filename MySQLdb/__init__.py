@@ -9,6 +9,7 @@ from MySQLdb.types import BINARY, DATETIME, NUMBER, ROWID, STRING
 
 
 apilevel = "2.0"
+paramstyle = "pyformat"
 
 
 def Binary(x):

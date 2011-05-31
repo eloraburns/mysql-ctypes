@@ -7,6 +7,7 @@ class Cursor(object):
     def __init__(self, connection):
         self.connection = weakref.proxy(connection)
         self.arraysize = 1
+        self.rowcount = -1
         self._result = None
 
     def _check_closed(self):
