@@ -11,6 +11,31 @@ MYSQL_RES_P = ctypes.POINTER(MYSQL_RES)
 
 MYSQL_ROW = ctypes.POINTER(ctypes.POINTER(ctypes.c_char))
 
+class MYSQL_FIELD(ctypes.Structure):
+    _fields_ = [
+        ("name", ctypes.c_char_p),
+        ("org_name", ctypes.c_char_p),
+        ("table", ctypes.c_char_p),
+        ("org_table", ctypes.c_char_p),
+        ("db", ctypes.c_char_p),
+        ("catalog", ctypes.c_char_p),
+        ("def", ctypes.c_char_p),
+        ("length", ctypes.c_ulong),
+        ("max_length", ctypes.c_ulong),
+        ("name_length", ctypes.c_uint),
+        ("org_name_length", ctypes.c_uint),
+        ("table_length", ctypes.c_uint),
+        ("org_table_length", ctypes.c_uint),
+        ("db_length", ctypes.c_uint),
+        ("catalog_length", ctypes.c_uint),
+        ("def_length", ctypes.c_uint),
+        ("flags", ctypes.c_uint),
+        ("decimals", ctypes.c_uint),
+        ("charsetnr", ctypes.c_uint),
+        ("type", ctypes.c_int),
+    ]
+MYSQL_FIELD_P = ctypes.POINTER(MYSQL_FIELD)
+
 c = ctypes.CDLL("libmysqlclient.so")
 
 c.mysql_init.argtypes = [MYSQL_P]
@@ -48,3 +73,6 @@ c.mysql_fetch_row.restype = MYSQL_ROW
 
 c.mysql_fetch_lengths.argtypes = [MYSQL_RES_P]
 c.mysql_fetch_lengths.restype = ctypes.POINTER(ctypes.c_ulong)
+
+c.mysql_fetch_fields.argtypes = [MYSQL_RES_P]
+c.mysql_fetch_fields.restype = MYSQL_FIELD_P

@@ -1,3 +1,6 @@
+from MySQLdb.constants import field_types
+
+
 class FieldType(object):
     def __init__(self, *args):
         self.values = frozenset(args)
@@ -7,8 +10,9 @@ class FieldType(object):
             return self.values.issuperset(other.values)
         return other in self.values
 
+
 BINARY = FieldType()
 DATETIME = FieldType()
 NUMBER = FieldType()
 ROWID = FieldType()
-STRING = FieldType()
+STRING = FieldType(field_types.VAR_STRING, field_types.STRING)

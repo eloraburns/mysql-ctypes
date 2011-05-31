@@ -29,6 +29,12 @@ class Cursor(object):
             self.connection._exception()
         self._result = Result(self)
 
+    @property
+    def description(self):
+        if self._result is not None:
+            return self._result.description
+        return None
+
     def close(self):
         if not self.connection:
             return
@@ -55,9 +61,11 @@ class Result(object):
     def __init__(self, cursor):
         self.cursor = cursor
         self._result = libmysql.c.mysql_store_result(self.cursor.connection._db)
+        self.description = None
         if not self._result:
             return
         self._nfields = libmysql.c.mysql_num_fields(self._result)
+        self.description = self._describe()
 
         self.rows = []
 
@@ -76,6 +84,22 @@ class Result(object):
             else:
                 r[i] = "".join([row[i][j] for j in xrange(lengths[i])])
         return tuple(r)
+
+    def _describe(self):
+        n = libmysql.c.mysql_num_fields(self._result)
+        fields = libmysql.c.mysql_fetch_fields(self._result)
+        d = [None] * n
+        for i in xrange(n):
+            d[i] = (
+                fields[i].name,
+                fields[i].type,
+                fields[i].max_length,
+                fields[i].length,
+                fields[i].length,
+                fields[i].decimals,
+                None
+            )
+        return tuple(d)
 
     def flush(self):
         if self._result:
