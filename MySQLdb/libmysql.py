@@ -21,3 +21,6 @@ c.mysql_real_connect.argtypes = [
     ctypes.c_ulong      # client_flag
 ]
 c.mysql_real_connect.restype = MYSQL_P
+
+c.mysql_error.argtypes = [MYSQL_P]
+c.mysql_error.restype = ctypes.c_char_p

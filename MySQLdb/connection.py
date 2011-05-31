@@ -1,12 +1,15 @@
 from ctypes import byref, pointer
 
 from MySQLdb import cursors, libmysql
+from MySQLdb.exceptions import OperationalError
 
 
 class Connection(object):
-    def __init__(self, host=None, user=None):
+    MYSQL_ERROR_MAP = {}
+
+    def __init__(self, host=None, user=None, db=None):
         self._db = libmysql.c.mysql_init(None)
-        res = libmysql.c.mysql_real_connect(self._db, host, user, None, None, 0, None, 0)
+        res = libmysql.c.mysql_real_connect(self._db, host, user, None, db, 0, None, 0)
         if not res:
             self._exception()
 
