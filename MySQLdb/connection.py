@@ -45,6 +45,10 @@ class Connection(object):
         libmysql.c.mysql_close(self._db)
         self._db = None
 
+    def commit(self):
+        res = libmysql.c.mysql_query(self._db, "COMMIT")
+        if res:
+            self._exception()
 
     def cursor(self):
         return cursors.Cursor(self)

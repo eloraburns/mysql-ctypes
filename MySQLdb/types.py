@@ -10,3 +10,5 @@ class FieldType(object):
 BINARY = FieldType()
 DATETIME = FieldType()
 NUMBER = FieldType()
+ROWID = FieldType()
+STRING = FieldType()
