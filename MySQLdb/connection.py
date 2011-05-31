@@ -1,11 +1,14 @@
 from ctypes import byref, pointer
 
 from MySQLdb import cursors, libmysql
-from MySQLdb.exceptions import OperationalError, ProgrammingError, InterfaceError
 
 
 class Connection(object):
     MYSQL_ERROR_MAP = {}
+
+    from MySQLdb.exceptions import (Warning, Error, InterfaceError,
+        DatabaseError, OperationalError, IntegrityError, InternalError,
+        ProgrammingError, NotSupportedError)
 
     def __init__(self, host=None, user=None, db=None):
         self._db = libmysql.c.mysql_init(None)
@@ -34,7 +37,7 @@ class Connection(object):
             elif err < 1000:
                 err_cls = InternalError
             else:
-                err_cls = OperationalError
+                err_cls = self.OperationalError
         raise err_cls(err, libmysql.c.mysql_error(self._db))
 
     def close(self):

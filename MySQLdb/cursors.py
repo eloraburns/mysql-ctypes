@@ -70,7 +70,10 @@ class Result(object):
         lengths = libmysql.c.mysql_fetch_lengths(self._result)
         r = [None] * n
         for i in xrange(n):
-            r[i] = "".join([row[i][j] for j in xrange(lengths[i])])
+            if not row[i]:
+                r[i] = None
+            else:
+                r[i] = "".join([row[i][j] for j in xrange(lengths[i])])
         return tuple(r)
 
     def flush(self):
