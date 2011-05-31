@@ -34,6 +34,9 @@ c.mysql_error.restype = ctypes.c_char_p
 c.mysql_real_query.argtypes = [MYSQL_P, ctypes.c_char_p, ctypes.c_ulong]
 c.mysql_real_query.restype = ctypes.c_int
 
+c.mysql_query.argtypes = [MYSQL_P, ctypes.c_char_p]
+c.mysql_query.restype = ctypes.c_int
+
 c.mysql_store_result.argtypes = [MYSQL_P]
 c.mysql_store_result.restype = MYSQL_RES_P
 

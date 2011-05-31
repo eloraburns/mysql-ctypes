@@ -22,7 +22,7 @@ class Connection(object):
 
     def _check_closed(self):
         if not self._db:
-            raise ProgrammingError("closing a closed connection")
+            raise self.ProgrammingError("closing a closed connection")
 
     def _has_error(self):
         return libmysql.c.mysql_errno(self._db) != 0
@@ -46,6 +46,7 @@ class Connection(object):
         self._db = None
 
     def commit(self):
+        self._check_closed()
         res = libmysql.c.mysql_query(self._db, "COMMIT")
         if res:
             self._exception()
