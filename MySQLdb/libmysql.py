@@ -76,3 +76,6 @@ c.mysql_fetch_lengths.restype = ctypes.POINTER(ctypes.c_ulong)
 
 c.mysql_fetch_fields.argtypes = [MYSQL_RES_P]
 c.mysql_fetch_fields.restype = MYSQL_FIELD_P
+
+c.mysql_real_escape_string.argtypes = [MYSQL_P, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_ulong]
+c.mysql_real_escape_string.restype = ctypes.c_ulong

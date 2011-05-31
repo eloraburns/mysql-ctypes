@@ -1,13 +1,16 @@
+import collections
 import weakref
 
 from MySQLdb import libmysql
 
 
 class Cursor(object):
-    def __init__(self, connection):
+    def __init__(self, connection, encoders):
         self.connection = weakref.proxy(connection)
         self.arraysize = 1
         self.rowcount = -1
+        self.encoders = encoders
+
         self._result = None
 
     def _check_closed(self):
@@ -30,6 +33,13 @@ class Cursor(object):
             self.connection._exception()
         self._result = Result(self)
 
+    def _get_encoder(self, val):
+        for encoder in self.encoders:
+            res = encoder(val)
+            if res:
+                return res
+
+
     @property
     def description(self):
         if self._result is not None:
@@ -49,7 +59,16 @@ class Cursor(object):
         if isinstance(query, unicode):
             query = query.encode(db.character_set_name())
         if args is not None:
-            raise NotImplementedError
+            if isinstance(args, tuple):
+                query %= tuple(
+                    self._get_encoder(arg)(self.connection, arg)
+                    for arg in args
+                )
+            elif isinstance(args, collections.Mapping):
+                query %= {
+                    key: self._get_encoder(value)(self.connection, value)
+                    for key, value in args.iteritems()
+                }
         self._query(query)
 
     def fetchall(self):
