@@ -10,9 +10,9 @@ class Connection(object):
         DatabaseError, OperationalError, IntegrityError, InternalError,
         ProgrammingError, NotSupportedError)
 
-    def __init__(self, host=None, user=None, db=None, encoders=None, decoders=None):
+    def __init__(self, host=None, user=None, db=None, port=0, client_flag=0, encoders=None, decoders=None):
         self._db = libmysql.c.mysql_init(None)
-        res = libmysql.c.mysql_real_connect(self._db, host, user, None, db, 0, None, 0)
+        res = libmysql.c.mysql_real_connect(self._db, host, user, None, db, port, None, client_flag)
         if not res:
             self._exception()
         if encoders is None:
@@ -76,6 +76,10 @@ class Connection(object):
         buf = create_string_buffer(len(obj) * 2)
         length = libmysql.c.mysql_real_escape_string(self._db, buf, obj, len(obj))
         return "'%s'" % string_at(buf, length)
+
+    def get_server_info(self):
+        self._check_closed()
+        return libmysql.c.mysql_get_server_info(self._db)
 
 def connect(*args, **kwargs):
     return Connection(*args, **kwargs)

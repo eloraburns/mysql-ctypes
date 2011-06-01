@@ -83,3 +83,6 @@ c.mysql_real_escape_string.restype = ctypes.c_ulong
 
 c.mysql_affected_rows.argtypes = [MYSQL_P]
 c.mysql_affected_rows.restype = ctypes.c_ulonglong
+
+c.mysql_get_server_info.argtypes = [MYSQL_P]
+c.mysql_get_server_info.restype = ctypes.c_char_p

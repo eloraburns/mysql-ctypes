@@ -38,6 +38,11 @@ class TestCursor(BaseMySQLTests):
                 with py.test.raises(StopIteration):
                     x.next()
 
+    def test_longlong(self, connection):
+        with contextlib.closing(connection.cursor()) as cur:
+            cur.execute("SHOW COLLATION")
+            cur.fetchone()
+
 class TestDictCursor(BaseMySQLTests):
     def test_fetchall(self, connection):
         with self.create_table(connection, "people", name="VARCHAR(20)", age="INT"):
