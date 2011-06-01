@@ -140,6 +140,8 @@ class Result(object):
         self._result = libmysql.c.mysql_store_result(self.cursor.connection._db)
         self.description = None
         self.rowcount = -1
+        self.rows = None
+        self.row_index = 0
         if not self._result:
             return
 
@@ -190,6 +192,11 @@ class Result(object):
                 self.rows.append(row)
 
     def fetchall(self):
+        if self.rows is None:
+            raise self.cursor.connection.ProgrammingError("Can't fetchall() "
+                "from a query with no result rows")
         if self._result:
             self.flush()
-        return self.rows
+        rows = self.rows[self.row_index:]
+        self.row_index = len(self.rows)
+        return rows
