@@ -24,6 +24,7 @@ class Cursor(object):
 
         self._result = None
         self._executed = None
+        self.lastrowid = None
 
     def _check_closed(self):
         if not self.connection or not self.connection._db:
@@ -45,7 +46,6 @@ class Cursor(object):
         if r:
             self.connection._exception()
         self._result = Result(self)
-        self.lastrowid = libmysql.c.mysql_insert_id(self.connection._db)
 
     def _get_encoder(self, val):
         for encoder in self.encoders:
@@ -209,7 +209,9 @@ class Result(object):
         self.rows = None
         self.row_index = 0
         if not self._result:
+            cursor.lastrowid = libmysql.c.mysql_insert_id(cursor.connection._db)
             return
+
 
         self.description = self._describe()
         self.row_decoders = [
