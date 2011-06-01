@@ -29,7 +29,7 @@ _simple_field_decoders = {
     field_types.LONG: int,
     field_types.LONGLONG: int,
     field_types.VAR_STRING: str,
-    field_types.BLOG: unicode,
+    field_types.BLOB: unicode,
     field_types.DATETIME: datetime_decoder,
 }
 
