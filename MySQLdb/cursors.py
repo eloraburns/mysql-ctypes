@@ -142,6 +142,12 @@ class Cursor(object):
             size = self.arraysize
         return self._result.fetchmany(size)
 
+    def fetchone(self):
+        self._check_executed()
+        if not self._result:
+            return None
+        return self._result.fetchone()
+
 
 
 class Result(object):
@@ -226,3 +232,17 @@ class Result(object):
         rows = self.rows[self.row_index:row_end]
         self.row_index = row_end
         return rows
+
+    def fetchone(self):
+        if self.rows is None:
+            raise self.cursor.connection.ProgrammingError("Can't fetchone() "
+                "from a query with no result rows")
+
+        if self.row_index >= len(self.rows):
+            row = self._get_row()
+            if row is None:
+                return
+            self.rows.append(row)
+        row = self.rows[self.row_index]
+        self.row_index += 1
+        return row
