@@ -8,14 +8,18 @@ def object_to_quoted_sql(connection, obj):
         return unicode_to_sql(connection, obj)
     return connection.string_literal(str(obj))
 
+def none_encoder(obj):
+    if obj is None:
+        return lambda connection, obj: "NULL"
 
 def fallback_encoder(obj):
     return object_to_quoted_sql
 
-
 DEFAULT_ENCODERS = [
+    none_encoder,
     fallback_encoder,
 ]
+
 
 def datetime_decoder(value):
     date, time = value.split(" ", 1)

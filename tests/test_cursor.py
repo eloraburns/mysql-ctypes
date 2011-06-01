@@ -54,6 +54,12 @@ class TestCursor(BaseMySQLTests):
                 c, = cur.fetchall()
                 assert c == (0,)
 
+    def test_none(self, connection):
+        with contextlib.closing(connection.cursor()) as cur:
+            cur.execute("SELECT %s", (None,))
+            row, = cur.fetchall()
+            assert row == (None,)
+
     def test_longlong(self, connection):
         with contextlib.closing(connection.cursor()) as cur:
             cur.execute("SHOW COLLATION")
