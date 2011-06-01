@@ -1,10 +1,13 @@
 from ctypes import pointer, create_string_buffer, string_at
 
 from MySQLdb import cursors, libmysql, converters
+from MySQLdb.constants import error_codes
 
 
 class Connection(object):
-    MYSQL_ERROR_MAP = {}
+    MYSQL_ERROR_MAP = {
+        error_codes.NO_SUCH_TABLE: "ProgrammingError",
+    }
 
     from MySQLdb.exceptions import (Warning, Error, InterfaceError,
         DatabaseError, OperationalError, IntegrityError, InternalError,
@@ -49,7 +52,7 @@ class Connection(object):
             err_cls = self.InterfaceError
         else:
             if err in self.MYSQL_ERROR_MAP:
-                err_cls = self.MYSQL_ERROR_MAP[err]
+                err_cls = getattr(self, self.MYSQL_ERROR_MAP[err])
             elif err < 1000:
                 err_cls = self.InternalError
             else:
