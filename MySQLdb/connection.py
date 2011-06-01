@@ -1,4 +1,4 @@
-from ctypes import byref, pointer, create_string_buffer, string_at
+from ctypes import pointer, create_string_buffer, string_at
 
 from MySQLdb import cursors, libmysql, converters
 
@@ -15,6 +15,8 @@ class Connection(object):
         res = libmysql.c.mysql_real_connect(self._db, host, user, None, db, port, None, client_flag)
         if not res:
             self._exception()
+        self.open = True
+
         if encoders is None:
             encoders = converters.DEFAULT_ENCODERS
         if decoders is None:
@@ -25,11 +27,11 @@ class Connection(object):
         self.autocommit(False)
 
     def __del__(self):
-        if self._db:
+        if self.open:
             self.close()
 
     def _check_closed(self):
-        if not self._db:
+        if not self.open:
             self._exception()
 
     def _has_error(self):
@@ -51,7 +53,7 @@ class Connection(object):
     def close(self):
         self._check_closed()
         libmysql.c.mysql_close(self._db)
-        self._db = None
+        self.open = False
 
     def autocommit(self, flag):
         self._check_closed()
