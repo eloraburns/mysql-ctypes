@@ -1,1 +1,3 @@
 *.py[co]
+.tox/
+mysql_ctypes.egg-info/
