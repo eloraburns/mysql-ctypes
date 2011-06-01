@@ -89,3 +89,12 @@ c.mysql_get_server_info.restype = ctypes.c_char_p
 
 c.mysql_insert_id.argtypes = [MYSQL_P]
 c.mysql_insert_id.restype = ctypes.c_ulonglong
+
+c.mysql_autocommit.argtypes = [MYSQL_P, ctypes.c_char]
+c.mysql_autocommit.restype = ctypes.c_char
+
+c.mysql_commit.argtypes = [MYSQL_P]
+c.mysql_commit.restype = ctypes.c_char
+
+c.mysql_rollback.argtypes = [MYSQL_P]
+c.mysql_rollback.restype = ctypes.c_char

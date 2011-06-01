@@ -14,7 +14,7 @@ class BaseMySQLTests(object):
             )
             if pk is not None:
                 fields += ", PRIMARY KEY (%s)" % pk
-            cursor.execute("CREATE TABLE %s (%s)" % (table_name, fields))
+            cursor.execute("CREATE TABLE %s (%s) ENGINE=InnoDB" % (table_name, fields))
         try:
             yield
         finally:

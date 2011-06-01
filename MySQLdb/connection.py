@@ -22,6 +22,8 @@ class Connection(object):
         self.encoders = encoders
         self.decoders = decoders
 
+        self.autocommit(False)
+
     def __del__(self):
         if self._db:
             self.close()
@@ -36,7 +38,7 @@ class Connection(object):
     def _exception(self):
         err = libmysql.c.mysql_errno(self._db)
         if not err:
-            err_cls = InterfaceError
+            err_cls = self.InterfaceError
         else:
             if err in self.MYSQL_ERROR_MAP:
                 err_cls = self.MYSQL_ERROR_MAP[err]
@@ -51,16 +53,22 @@ class Connection(object):
         libmysql.c.mysql_close(self._db)
         self._db = None
 
+    def autocommit(self, flag):
+        self._check_closed()
+        res = libmysql.c.mysql_autocommit(self._db, chr(flag))
+        if ord(res):
+            self._exception()
+
     def commit(self):
         self._check_closed()
-        res = libmysql.c.mysql_query(self._db, "COMMIT")
-        if res:
+        res = libmysql.c.mysql_commit(self._db, "COMMIT")
+        if ord(res):
             self._exception()
 
     def rollback(self):
         self._check_closed()
-        res = libmysql.c.mysql_query(self._db, "ROLLBACK")
-        if res:
+        res = libmysql.c.mysql_rollback(self._db)
+        if ord(res):
             self._exception()
 
     def cursor(self, cursor_class=None, encoders=None, decoders=None):

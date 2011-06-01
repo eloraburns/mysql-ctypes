@@ -45,6 +45,15 @@ class TestCursor(BaseMySQLTests):
                 cur.execute("INSERT INTO users () VALUES ()")
                 assert cur.lastrowid
 
+    def test_autocommit(self, connection):
+        with self.create_table(connection, "users", uid="INT"):
+            with contextlib.closing(connection.cursor()) as cur:
+                cur.executemany("INSERT INTO users (uid) VALUES (%s)", [(i,) for i in xrange(5)])
+                connection.rollback()
+                cur.execute("SELECT COUNT(*) FROM users")
+                c, = cur.fetchall()
+                assert c == (0,)
+
     def test_longlong(self, connection):
         with contextlib.closing(connection.cursor()) as cur:
             cur.execute("SHOW COLLATION")
