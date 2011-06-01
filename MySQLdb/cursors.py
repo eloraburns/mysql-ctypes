@@ -73,7 +73,6 @@ class Cursor(object):
         raise self.connection.NotSupportedError("Unexpected type to "
             "execute/executemany for args: %s" % args)
 
-
     @property
     def description(self):
         if self._result is not None:
@@ -96,6 +95,9 @@ class Cursor(object):
     def rowcount(self):
         if hasattr(self, "_rowcount"):
             del self._rowcount
+
+    def __iter__(self):
+        return iter(self.fetchone, None)
 
     def close(self):
         if not self.connection:

@@ -23,6 +23,21 @@ class TestCursor(BaseMySQLTests):
                 with py.test.raises(connection.ProgrammingError):
                     cur.fetchmany()
 
+    def test_iterable(self, connection):
+        with self.create_table(connection, "users", uid="INT"):
+            with contextlib.closing(connection.cursor()) as cur:
+                cur.executemany("INSERT INTO users (uid) VALUES (%s)", [(i,) for i in xrange(5)])
+                cur.execute("SELECT * FROM users")
+                x = iter(cur)
+                row = cur.fetchone()
+                assert row == (0,)
+                row = x.next()
+                assert row == (1,)
+                rows = cur.fetchall()
+                assert rows == [(2,), (3,), (4,)]
+                with py.test.raises(StopIteration):
+                    x.next()
+
 class TestDictCursor(BaseMySQLTests):
     def test_fetchall(self, connection):
         with self.create_table(connection, "people", name="VARCHAR(20)", age="INT"):
@@ -35,8 +50,7 @@ class TestDictCursor(BaseMySQLTests):
     def test_fetchmany(self, connection):
         with self.create_table(connection, "users", uid="INT"):
             with contextlib.closing(connection.cursor(DictCursor)) as cur:
-                for i in xrange(10):
-                    cur.execute("INSERT INTO users (uid) VALUES (%s)", (i,))
+                cur.executemany("INSERT INTO users (uid) VALUES (%s)", [(i,) for i in xrange(10)])
                 cur.execute("SELECT * FROM users")
                 rows = cur.fetchmany()
                 assert rows == [{"uid": 0}]
