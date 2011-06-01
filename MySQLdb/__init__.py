@@ -10,6 +10,8 @@ from MySQLdb.types import BINARY, DATETIME, NUMBER, ROWID, STRING
 
 apilevel = "2.0"
 paramstyle = "pyformat"
+# Multiple threads can use the module, but not the connections.
+threadsafety = 1
 
 
 def Binary(x):

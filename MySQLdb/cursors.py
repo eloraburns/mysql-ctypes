@@ -148,6 +148,12 @@ class Cursor(object):
             return None
         return self._result.fetchone()
 
+    def setinputsizes(self, *args):
+        pass
+
+    def setoutputsize(self, *args):
+        pass
+
 
 
 class Result(object):
