@@ -1,4 +1,5 @@
 import contextlib
+import datetime
 
 import py
 
@@ -42,6 +43,16 @@ class TestCursor(BaseMySQLTests):
         with contextlib.closing(connection.cursor()) as cur:
             cur.execute("SHOW COLLATION")
             cur.fetchone()
+
+    def test_datetime(self, connection):
+        with contextlib.closing(connection.cursor()) as cur:
+            cur.execute("SELECT SYSDATE()")
+            row = cur.fetchone()
+            now = datetime.datetime.now()
+            assert row[0].date() == now.date()
+            assert row[0].hour == now.hour
+            # ~1 in 60 chance of spurious failure, i'll take those odds
+            assert row[0].minute == now.minute
 
 class TestDictCursor(BaseMySQLTests):
     def test_fetchall(self, connection):

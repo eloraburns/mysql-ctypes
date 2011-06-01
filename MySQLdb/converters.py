@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from MySQLdb.constants import field_types
 
 
@@ -15,11 +17,15 @@ DEFAULT_ENCODERS = [
     fallback_encoder,
 ]
 
+def datetime_decoder(value):
+    date, time = value.split(" ", 1)
+    return datetime(*[int(part) for part in date.split("-") + time.split(":")])
 
 _simple_field_decoders = {
     field_types.LONG: int,
     field_types.LONGLONG: int,
     field_types.VAR_STRING: str,
+    field_types.DATETIME: datetime_decoder,
 }
 
 def fallback_decoder(field):
