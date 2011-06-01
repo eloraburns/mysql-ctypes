@@ -134,6 +134,16 @@ class Cursor(object):
             return []
         return self._result.fetchall()
 
+    def fetchmany(self, size=None):
+        self._check_executed()
+        if not self._result:
+            return []
+        if size is None:
+            size = self.arraysize
+        return self._result.fetchmany(size)
+
+
+
 class Result(object):
     def __init__(self, cursor):
         self.cursor = cursor
@@ -199,4 +209,20 @@ class Result(object):
             self.flush()
         rows = self.rows[self.row_index:]
         self.row_index = len(self.rows)
+        return rows
+
+    def fetchmany(self, size):
+        if self._result:
+            for i in xrange(size - (len(self.rows) - self.row_index)):
+                row = self._get_row()
+                if row is None:
+                    break
+                self.rows.append(row)
+        if self.row_index >= len(self.rows):
+            return []
+        row_end = self.row_index + size
+        if row_end >= len(self.rows):
+            row_end = len(self.rows)
+        rows = self.rows[self.row_index:row_end]
+        self.row_index = row_end
         return rows
