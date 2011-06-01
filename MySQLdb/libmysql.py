@@ -79,3 +79,6 @@ c.mysql_fetch_fields.restype = MYSQL_FIELD_P
 
 c.mysql_real_escape_string.argtypes = [MYSQL_P, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_ulong]
 c.mysql_real_escape_string.restype = ctypes.c_ulong
+
+c.mysql_affected_rows.argtypes = [MYSQL_P]
+c.mysql_affected_rows.restype = ctypes.c_ulonglong
