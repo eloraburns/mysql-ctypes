@@ -11,7 +11,7 @@ class Connection(object):
         ProgrammingError, NotSupportedError)
 
     def __init__(self, host=None, user=None, db=None, port=0, client_flag=0,
-        encoders=None, decoders=None, use_unicode=True):
+        charset=None, encoders=None, decoders=None, use_unicode=True):
 
         self._db = libmysql.c.mysql_init(None)
         res = libmysql.c.mysql_real_connect(self._db, host, user, None, db, port, None, client_flag)
@@ -27,6 +27,10 @@ class Connection(object):
         self.decoders = decoders
 
         self.autocommit(False)
+        if charset is not None:
+            res = libmysql.c.mysql_set_character_set(self._db, charset)
+            if res:
+                self._exception()
 
     def __del__(self):
         if self.open:
