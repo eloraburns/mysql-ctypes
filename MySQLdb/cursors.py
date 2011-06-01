@@ -24,7 +24,7 @@ class Cursor(object):
 
         self._result = None
         self._executed = None
-        self.lastrowid = None
+        self.rowcount = -1
 
     def _check_closed(self):
         if not self.connection or not self.connection._db:
@@ -37,7 +37,6 @@ class Cursor(object):
     def _clear(self):
         if self._result is not None:
             self._result = None
-        del self.rowcount
 
     def _query(self, query):
         self._executed = query
@@ -80,23 +79,6 @@ class Cursor(object):
             return self._result.description
         return None
 
-    @property
-    def rowcount(self):
-        if hasattr(self, "_rowcount"):
-            return self._rowcount
-        if self._result is not None:
-            return self._result.rowcount
-        return -1
-
-    @rowcount.setter
-    def rowcount(self, rowcount):
-        self._rowcount = rowcount
-
-    @rowcount.deleter
-    def rowcount(self):
-        if hasattr(self, "_rowcount"):
-            del self._rowcount
-
     def __iter__(self):
         return iter(self.fetchone, None)
 
@@ -126,11 +108,8 @@ class Cursor(object):
             query = query.encode(self.connection.character_set_name())
         matched = INSERT_VALUES.match(query)
         if not matched:
-            rowcount = 0
             for arg in args:
                 self.execute(query, arg)
-                rowcount += self.rowcount
-            self.rowcount = rowcount
         else:
             start, values, end = matched.group("start", "values", "end")
             sql_params = [
@@ -205,7 +184,6 @@ class Result(object):
         self.cursor = cursor
         self._result = libmysql.c.mysql_store_result(self.cursor.connection._db)
         self.description = None
-        self.rowcount = -1
         self.rows = None
         self.row_index = 0
         if not self._result:
@@ -218,8 +196,6 @@ class Result(object):
             self.cursor._get_decoder(field)
             for field in self.description
         ]
-
-        self.rowcount = libmysql.c.mysql_affected_rows(self.cursor.connection._db)
 
         self.rows = []
 

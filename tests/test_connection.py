@@ -14,5 +14,5 @@ class TestConnection(BaseMySQLTests):
 
     def test_closed_rollback(self, connection):
         connection.close()
-        with py.test.raises(connection.OperationalError):
+        with py.test.raises(connection.InterfaceError):
             connection.rollback()
