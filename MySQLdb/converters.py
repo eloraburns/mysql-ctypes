@@ -18,6 +18,7 @@ DEFAULT_ENCODERS = [
 
 _simple_field_decoders = {
     field_types.LONG: int,
+    field_types.VAR_STRING: str,
 }
 
 def fallback_decoder(field):

@@ -234,9 +234,7 @@ class Result(object):
                 r[i] = None
             else:
                 val = "".join([row[i][j] for j in xrange(lengths[i])])
-                if decoder is not None:
-                    val = decoder(val)
-                r[i] = val
+                r[i] = decoder(val)
 
         return tuple(r)
 
