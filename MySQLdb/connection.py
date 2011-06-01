@@ -45,7 +45,7 @@ class Connection(object):
             if err in self.MYSQL_ERROR_MAP:
                 err_cls = self.MYSQL_ERROR_MAP[err]
             elif err < 1000:
-                err_cls = InternalError
+                err_cls = self.InternalError
             else:
                 err_cls = self.OperationalError
         raise err_cls(err, libmysql.c.mysql_error(self._db))
