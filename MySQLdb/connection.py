@@ -10,7 +10,9 @@ class Connection(object):
         DatabaseError, OperationalError, IntegrityError, InternalError,
         ProgrammingError, NotSupportedError)
 
-    def __init__(self, host=None, user=None, db=None, port=0, client_flag=0, encoders=None, decoders=None):
+    def __init__(self, host=None, user=None, db=None, port=0, client_flag=0,
+        encoders=None, decoders=None, use_unicode=True):
+
         self._db = libmysql.c.mysql_init(None)
         res = libmysql.c.mysql_real_connect(self._db, host, user, None, db, port, None, client_flag)
         if not res:
