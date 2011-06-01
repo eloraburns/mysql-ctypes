@@ -176,12 +176,19 @@ class Cursor(object):
         pass
 
 class DictCursor(Cursor):
+    def _make_row(self, row):
+        return {
+            description[0]: value
+            for description, value in itertools.izip(self._result.description, row)
+        }
+
     def fetchall(self):
         rows = super(DictCursor, self).fetchall()
-        return [
-            {description[0]: value for description, value in itertools.izip(self._result.description, row)}
-            for row in rows
-        ]
+        return [self._make_row(row) for row in rows]
+
+    def fetchmany(self, size=None):
+        rows = super(DictCursor, self).fetchmany(size)
+        return [self._make_row(row) for row in rows]
 
 
 class Result(object):
@@ -241,6 +248,11 @@ class Result(object):
             )
         return tuple(d)
 
+    def _check_rows(self, meth):
+        if self.rows is None:
+            raise self.cursor.connection.ProgrammingError("Can't %s from a "
+                "query with no result rows" % meth)
+
     def flush(self):
         if self._result:
             while True:
@@ -250,9 +262,7 @@ class Result(object):
                 self.rows.append(row)
 
     def fetchall(self):
-        if self.rows is None:
-            raise self.cursor.connection.ProgrammingError("Can't fetchall() "
-                "from a query with no result rows")
+        self._check_rows("fetchall")
         if self._result:
             self.flush()
         rows = self.rows[self.row_index:]
@@ -260,6 +270,7 @@ class Result(object):
         return rows
 
     def fetchmany(self, size):
+        self._check_rows("fetchmany")
         if self._result:
             for i in xrange(size - (len(self.rows) - self.row_index)):
                 row = self._get_row()
@@ -276,9 +287,7 @@ class Result(object):
         return rows
 
     def fetchone(self):
-        if self.rows is None:
-            raise self.cursor.connection.ProgrammingError("Can't fetchone() "
-                "from a query with no result rows")
+        self._check_rows("fetchone")
 
         if self.row_index >= len(self.rows):
             row = self._get_row()

@@ -1,5 +1,7 @@
 import contextlib
 
+import py
+
 from MySQLdb.cursors import DictCursor
 
 from .base import BaseMySQLTests
@@ -14,6 +16,13 @@ class TestCursor(BaseMySQLTests):
                 results = cur.fetchall()
                 assert results == [("website",)]
 
+    def test_fetchmany_insert(self, connection):
+        with self.create_table(connection, "things", name="VARCHAR(20)"):
+            with contextlib.closing(connection.cursor()) as cur:
+                cur.execute("INSERT INTO things (name) VALUES ('website')")
+                with py.test.raises(connection.ProgrammingError):
+                    cur.fetchmany()
+
 class TestDictCursor(BaseMySQLTests):
     def test_fetchone(self, connection):
         with self.create_table(connection, "people", name="VARCHAR(20)", age="INT"):
@@ -22,3 +31,14 @@ class TestDictCursor(BaseMySQLTests):
                 cur.execute("SELECT * FROM people")
                 rows = cur.fetchall()
                 assert rows == [{"name": "guido", "age": 50}]
+
+    def test_fetchmany(self, connection):
+        with self.create_table(connection, "users", uid="INT"):
+            with contextlib.closing(connection.cursor(DictCursor)) as cur:
+                for i in xrange(10):
+                    cur.execute("INSERT INTO users (uid) VALUES (%s)", (i,))
+                cur.execute("SELECT * FROM users")
+                rows = cur.fetchmany()
+                assert rows == [{"uid": 0}]
+                rows = cur.fetchmany(2)
+                assert rows == [{"uid": 1}, {"uid": 2}]
