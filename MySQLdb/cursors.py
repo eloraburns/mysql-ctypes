@@ -45,6 +45,7 @@ class Cursor(object):
         if r:
             self.connection._exception()
         self._result = Result(self)
+        self.lastrowid = libmysql.c.mysql_insert_id(self.connection._db)
 
     def _get_encoder(self, val):
         for encoder in self.encoders:

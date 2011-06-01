@@ -39,6 +39,12 @@ class TestCursor(BaseMySQLTests):
                 with py.test.raises(StopIteration):
                     x.next()
 
+    def test_lastrowid(self, connection):
+        with self.create_table(connection, "users", uid="INT NOT NULL AUTO_INCREMENT", primary_key="uid"):
+            with contextlib.closing(connection.cursor()) as cur:
+                cur.execute("INSERT INTO users () VALUES ()")
+                assert cur.lastrowid
+
     def test_longlong(self, connection):
         with contextlib.closing(connection.cursor()) as cur:
             cur.execute("SHOW COLLATION")

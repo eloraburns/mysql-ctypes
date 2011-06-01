@@ -86,3 +86,6 @@ c.mysql_affected_rows.restype = ctypes.c_ulonglong
 
 c.mysql_get_server_info.argtypes = [MYSQL_P]
 c.mysql_get_server_info.restype = ctypes.c_char_p
+
+c.mysql_insert_id.argtypes = [MYSQL_P]
+c.mysql_insert_id.restype = ctypes.c_ulonglong
