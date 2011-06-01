@@ -24,7 +24,7 @@ class TestCursor(BaseMySQLTests):
                     cur.fetchmany()
 
 class TestDictCursor(BaseMySQLTests):
-    def test_fetchone(self, connection):
+    def test_fetchall(self, connection):
         with self.create_table(connection, "people", name="VARCHAR(20)", age="INT"):
             with contextlib.closing(connection.cursor(DictCursor)) as cur:
                 cur.execute("INSERT INTO people (name, age) VALUES ('guido', 50)")
@@ -42,3 +42,13 @@ class TestDictCursor(BaseMySQLTests):
                 assert rows == [{"uid": 0}]
                 rows = cur.fetchmany(2)
                 assert rows == [{"uid": 1}, {"uid": 2}]
+
+    def test_fetchone(self, connection):
+        with self.create_table(connection, "salads", country="VARCHAR(20)"):
+            with contextlib.closing(connection.cursor(DictCursor)) as cur:
+                cur.execute("INSERT INTO salads (country) VALUES ('Italy')")
+                cur.execute("SELECT * FROM salads")
+                row = cur.fetchone()
+                assert row == {"country": "Italy"}
+                row = cur.fetchone()
+                assert row is None

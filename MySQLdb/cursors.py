@@ -190,6 +190,12 @@ class DictCursor(Cursor):
         rows = super(DictCursor, self).fetchmany(size)
         return [self._make_row(row) for row in rows]
 
+    def fetchone(self):
+        row = super(DictCursor, self).fetchone()
+        if row is not None:
+            row = self._make_row(row)
+        return row
+
 
 class Result(object):
     def __init__(self, cursor):
