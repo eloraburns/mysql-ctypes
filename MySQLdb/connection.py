@@ -54,6 +54,12 @@ class Connection(object):
         if res:
             self._exception()
 
+    def rollback(self):
+        self._check_closed()
+        res = libmysql.c.mysql_query(self._db, "ROLLBACK")
+        if res:
+            self._exception()
+
     def cursor(self, encoders=None):
         if encoders is None:
             encoders = self.encoders[:]

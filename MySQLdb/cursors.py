@@ -24,8 +24,8 @@ class Cursor(object):
         self._executed = None
 
     def _check_closed(self):
-        if not self.connection:
-            raise ProgrammingError("cursor closed")
+        if not self.connection or not self.connection._db:
+            raise self.connection.ProgrammingError("cursor closed")
 
     def _check_executed(self):
         if not self._executed:
@@ -51,6 +51,7 @@ class Cursor(object):
                 return res
 
     def _escape_data(self, args):
+        self._check_closed()
         if isinstance(args, tuple):
             return tuple(
                 self._get_encoder(arg)(self.connection, arg)
@@ -61,7 +62,7 @@ class Cursor(object):
                 key: self._get_encoder(value)(self.connection, value)
                 for key, value in args.iteritems()
             }
-        raise self.connection.NotSupportedException("Unexpected type to "
+        raise self.connection.NotSupportedError("Unexpected type to "
             "execute/executemany for args: %s" % args)
 
 
@@ -127,6 +128,18 @@ class Cursor(object):
             ]
             multirow_query = start + ",\n".join(sql_params) + end
             self._query(multirow_query)
+
+    def callproc(self, procname, args=()):
+        self._check_closed()
+        self._clear()
+
+        query = "SELECT %s(%s)" % (procname, ",".join(["%s"] * len(args)))
+        if isinstance(query, unicode):
+            query = _query.encode(self.connection.character_set_name())
+        query %= self._escape_data(args)
+        self._query(query)
+        return args
+
 
     def fetchall(self):
         self._check_executed()
