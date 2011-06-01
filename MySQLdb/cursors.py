@@ -66,10 +66,10 @@ class Cursor(object):
                 for arg in args
             )
         elif isinstance(args, collections.Mapping):
-            return {
-                key: self._get_encoder(value)(self.connection, value)
+            return dict(
+                (key, self._get_encoder(value)(self.connection, value))
                 for key, value in args.iteritems()
-            }
+            )
         raise self.connection.NotSupportedError("Unexpected type to "
             "execute/executemany for args: %s" % args)
 
@@ -177,10 +177,10 @@ class Cursor(object):
 
 class DictCursor(Cursor):
     def _make_row(self, row):
-        return {
-            description[0]: value
+        return dict(
+            (description[0], value)
             for description, value in itertools.izip(self._result.description, row)
-        }
+        )
 
     def fetchall(self):
         rows = super(DictCursor, self).fetchall()
