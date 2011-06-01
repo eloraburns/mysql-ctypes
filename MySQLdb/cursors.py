@@ -1,4 +1,5 @@
 import collections
+import itertools
 import re
 import weakref
 
@@ -15,10 +16,11 @@ INSERT_VALUES = re.compile(
 
 
 class Cursor(object):
-    def __init__(self, connection, encoders):
+    def __init__(self, connection, encoders, decoders):
         self.connection = weakref.proxy(connection)
         self.arraysize = 1
         self.encoders = encoders
+        self.decoders = decoders
 
         self._result = None
         self._executed = None
@@ -47,6 +49,12 @@ class Cursor(object):
     def _get_encoder(self, val):
         for encoder in self.encoders:
             res = encoder(val)
+            if res:
+                return res
+
+    def _get_decoder(self, val):
+        for decoder in self.decoders:
+            res = decoder(val)
             if res:
                 return res
 
@@ -167,6 +175,13 @@ class Cursor(object):
     def setoutputsize(self, *args):
         pass
 
+class DictCursor(Cursor):
+    def fetchall(self):
+        rows = super(DictCursor, self).fetchall()
+        return [
+            {description[0]: value for description, value in itertools.izip(self._result.description, row)}
+            for row in rows
+        ]
 
 
 class Result(object):
@@ -180,8 +195,12 @@ class Result(object):
         if not self._result:
             return
 
-        self._nfields = libmysql.c.mysql_num_fields(self._result)
         self.description = self._describe()
+        self.row_decoders = [
+            self.cursor._get_decoder(field)
+            for field in self.description
+        ]
+
         self.rowcount = libmysql.c.mysql_affected_rows(self.cursor.connection._db)
 
         self.rows = []
@@ -195,11 +214,15 @@ class Result(object):
         n = libmysql.c.mysql_num_fields(self._result)
         lengths = libmysql.c.mysql_fetch_lengths(self._result)
         r = [None] * n
-        for i in xrange(n):
+        for i, decoder in enumerate(self.row_decoders):
             if not row[i]:
                 r[i] = None
             else:
-                r[i] = "".join([row[i][j] for j in xrange(lengths[i])])
+                val = "".join([row[i][j] for j in xrange(lengths[i])])
+                if decoder is not None:
+                    val = decoder(val)
+                r[i] = val
+
         return tuple(r)
 
     def _describe(self):

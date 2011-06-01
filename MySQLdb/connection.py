@@ -10,14 +10,17 @@ class Connection(object):
         DatabaseError, OperationalError, IntegrityError, InternalError,
         ProgrammingError, NotSupportedError)
 
-    def __init__(self, host=None, user=None, db=None, encoders=None):
+    def __init__(self, host=None, user=None, db=None, encoders=None, decoders=None):
         self._db = libmysql.c.mysql_init(None)
         res = libmysql.c.mysql_real_connect(self._db, host, user, None, db, 0, None, 0)
         if not res:
             self._exception()
         if encoders is None:
             encoders = converters.DEFAULT_ENCODERS
+        if decoders is None:
+            decoders = converters.DEFAULT_DECODERS
         self.encoders = encoders
+        self.decoders = decoders
 
     def __del__(self):
         if self._db:
@@ -60,10 +63,14 @@ class Connection(object):
         if res:
             self._exception()
 
-    def cursor(self, encoders=None):
+    def cursor(self, cursor_class=None, encoders=None, decoders=None):
+        if cursor_class is None:
+            cursor_class = cursors.Cursor
         if encoders is None:
             encoders = self.encoders[:]
-        return cursors.Cursor(self, encoders=encoders)
+        if decoders is None:
+            decoders = self.decoders[:]
+        return cursor_class(self, encoders=encoders, decoders=decoders)
 
     def string_literal(self, obj):
         buf = create_string_buffer(len(obj) * 2)
