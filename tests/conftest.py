@@ -21,8 +21,11 @@ def pytest_addoption(parser):
 
 def pytest_funcarg__connection(request):
     option = request.config.option
+    extra_kwargs = {}
+    if hasattr(request.function, "client_flag"):
+        extra_kwargs["client_flag"], = request.function.client_flag.args
     conn = MySQLdb.connect(
-        host=option.mysql_host, user=option.mysql_user, db=option.mysql_database
+        host=option.mysql_host, user=option.mysql_user, db=option.mysql_database, **extra_kwargs
     )
 
     def close_conn():

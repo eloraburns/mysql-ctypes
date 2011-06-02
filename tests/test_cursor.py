@@ -4,6 +4,7 @@ import datetime
 import py
 
 from MySQLdb.cursors import DictCursor
+from MySQLdb.constants import CLIENT
 
 from .base import BaseMySQLTests
 
@@ -94,6 +95,14 @@ class TestCursor(BaseMySQLTests):
                 cur.execute("SELECT * FROM people ORDER BY age LIMIT %s", (1,))
                 rows = cur.fetchall()
                 assert rows == [(10,)]
+
+    @py.test.mark.client_flag(CLIENT.FOUND_ROWS)
+    def test_found_rows_client_flag(self, connection):
+        with self.create_table(connection, "people", age="INT"):
+            with contextlib.closing(connection.cursor()) as cur:
+                cur.execute("INSERT INTO people (age) VALUES (20)")
+                cur.execute("UPDATE people SET age = 20 WHERE age = 20")
+                assert cur.rowcount == 1
 
 class TestDictCursor(BaseMySQLTests):
     def test_fetchall(self, connection):
