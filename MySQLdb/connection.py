@@ -96,10 +96,15 @@ class Connection(object):
         return cursor_class(self, encoders=encoders, decoders=decoders)
 
     def string_literal(self, obj):
+        self._check_closed()
         obj = str(obj)
         buf = create_string_buffer(len(obj) * 2)
         length = libmysql.c.mysql_real_escape_string(self._db, buf, obj, len(obj))
         return "'%s'" % string_at(buf, length)
+
+    def character_set_name(self):
+        self._check_closed()
+        return libmysql.c.mysql_character_set_name(self._db)
 
     def get_server_info(self):
         self._check_closed()

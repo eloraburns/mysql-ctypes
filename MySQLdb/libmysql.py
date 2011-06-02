@@ -113,3 +113,6 @@ c.mysql_close.restype = None
 
 c.mysql_free_result.argtypes = [MYSQL_RES_P]
 c.mysql_free_result.restype = None
+
+c.mysql_character_set_name.argtypes = [MYSQL_P]
+c.mysql_character_set_name.restype = ctypes.c_char_p

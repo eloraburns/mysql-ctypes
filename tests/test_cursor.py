@@ -10,6 +10,12 @@ from .base import BaseMySQLTests
 
 
 class TestCursor(BaseMySQLTests):
+    def assert_roundtrips(self, connection, obj):
+        with contextlib.closing(connection.cursor()) as cur:
+            cur.execute("SELECT %s", (obj,))
+            rows, = cur.fetchall()
+            assert rows == (obj,)
+
     def test_basic_execute(self, connection):
         with self.create_table(connection, "things", name="VARCHAR(20)"):
             with contextlib.closing(connection.cursor()) as cur:
@@ -82,6 +88,9 @@ class TestCursor(BaseMySQLTests):
             row, = cur.fetchall()
             assert row == (datetime.date.today(),)
 
+    def test_binary(self, connection):
+        self.assert_roundtrips(connection, "".join(chr(x) for x in xrange(255)))
+
     def test_nonexistant_table(self, connection):
         with contextlib.closing(connection.cursor()) as cur:
             with py.test.raises(connection.ProgrammingError) as cm:
@@ -102,7 +111,7 @@ class TestCursor(BaseMySQLTests):
                 rows = cur.fetchall()
                 assert rows == [(10,)]
 
-    @py.test.mark.client_flag(CLIENT.FOUND_ROWS)
+    @py.test.mark.connect_opts(client_flag=CLIENT.FOUND_ROWS)
     def test_found_rows_client_flag(self, connection):
         with self.create_table(connection, "people", age="INT"):
             with contextlib.closing(connection.cursor()) as cur:

@@ -6,6 +6,10 @@ from MySQLdb.constants import field_types
 def literal(value):
     return lambda conn, obj: value
 
+def unicode_to_quoted_sql(connection, obj):
+    return connection.string_literal(obj.encode(connection.character_set_name()))
+
+
 def object_to_quoted_sql(connection, obj):
     if hasattr(obj, "__unicode__"):
         return unicode_to_sql(connection, obj)
@@ -19,12 +23,17 @@ def literal_encoder(obj):
     if isinstance(obj, int):
         return literal(str(obj))
 
+def unicode_encoder(obj):
+    if isinstance(obj, unicode):
+        return unicode_to_quoted_sql
+
 def fallback_encoder(obj):
     return object_to_quoted_sql
 
 DEFAULT_ENCODERS = [
     none_encoder,
     literal_encoder,
+    unicode_encoder,
     fallback_encoder,
 ]
 
