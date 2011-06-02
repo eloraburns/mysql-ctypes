@@ -26,6 +26,9 @@ class Cursor(object):
         self._executed = None
         self.rowcount = -1
 
+    def __del__(self):
+        self.close()
+
     def _check_closed(self):
         if not self.connection or not self.connection._db:
             raise self.connection.ProgrammingError("cursor closed")
@@ -84,10 +87,10 @@ class Cursor(object):
         return iter(self.fetchone, None)
 
     def close(self):
-        if not self.connection:
-            return
-
         self.connection = None
+        if self._result is not None:
+            self._result.close()
+            self._result = None
 
     def execute(self, query, args=None):
         self._check_closed()

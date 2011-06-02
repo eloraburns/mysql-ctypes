@@ -41,7 +41,7 @@ class Connection(object):
 
     def _check_closed(self):
         if self.closed:
-            self._exception()
+            raise self.InterfaceError("connection already closed")
 
     def _has_error(self):
         return libmysql.c.mysql_errno(self._db) != 0
