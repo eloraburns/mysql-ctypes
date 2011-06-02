@@ -16,3 +16,8 @@ class TestConnection(BaseMySQLTests):
         connection.close()
         with py.test.raises(connection.InterfaceError):
             connection.rollback()
+
+    def test_closed_property(self, connection):
+        assert not connection.closed
+        connection.close()
+        assert connection.closed

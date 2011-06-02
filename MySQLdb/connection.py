@@ -20,7 +20,6 @@ class Connection(object):
         res = libmysql.c.mysql_real_connect(self._db, host, user, None, db, port, None, client_flag)
         if not res:
             self._exception()
-        self.open = True
 
         if encoders is None:
             encoders = converters.DEFAULT_ENCODERS
@@ -36,11 +35,11 @@ class Connection(object):
                 self._exception()
 
     def __del__(self):
-        if self.open:
+        if not self.closed:
             self.close()
 
     def _check_closed(self):
-        if not self.open:
+        if self.closed:
             self._exception()
 
     def _has_error(self):
@@ -59,10 +58,14 @@ class Connection(object):
                 err_cls = self.OperationalError
         raise err_cls(err, libmysql.c.mysql_error(self._db))
 
+    @property
+    def closed(self):
+        return self._db is None
+
     def close(self):
         self._check_closed()
         libmysql.c.mysql_close(self._db)
-        self.open = False
+        self._db = None
 
     def autocommit(self, flag):
         self._check_closed()
