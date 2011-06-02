@@ -6,6 +6,7 @@ from MySQLdb.constants import error_codes
 
 class Connection(object):
     MYSQL_ERROR_MAP = {
+        error_codes.PARSE_ERROR: "ProgrammingError",
         error_codes.NO_SUCH_TABLE: "ProgrammingError",
     }
 
