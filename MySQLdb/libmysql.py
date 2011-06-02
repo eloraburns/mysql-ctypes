@@ -57,6 +57,9 @@ c.mysql_real_connect.restype = MYSQL_P
 c.mysql_error.argtypes = [MYSQL_P]
 c.mysql_error.restype = ctypes.c_char_p
 
+c.mysql_errno.argtypes = [MYSQL_P]
+c.mysql_errno.restype = ctypes.c_uint
+
 c.mysql_real_query.argtypes = [MYSQL_P, ctypes.c_char_p, ctypes.c_ulong]
 c.mysql_real_query.restype = ctypes.c_int
 
@@ -77,6 +80,9 @@ c.mysql_fetch_lengths.restype = ctypes.POINTER(ctypes.c_ulong)
 
 c.mysql_fetch_fields.argtypes = [MYSQL_RES_P]
 c.mysql_fetch_fields.restype = MYSQL_FIELD_P
+
+c.mysql_escape_string.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_ulong]
+c.mysql_escape_string.restype = ctypes.c_ulong
 
 c.mysql_real_escape_string.argtypes = [MYSQL_P, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_ulong]
 c.mysql_real_escape_string.restype = ctypes.c_ulong
@@ -101,3 +107,6 @@ c.mysql_rollback.restype = ctypes.c_char
 
 c.mysql_set_character_set.argtypes = [MYSQL_P, ctypes.c_char_p]
 c.mysql_set_character_set.restype = ctypes.c_int
+
+c.mysql_close.argtypes = [MYSQL_P]
+c.mysql_close.restype = None
