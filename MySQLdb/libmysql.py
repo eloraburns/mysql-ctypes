@@ -110,3 +110,6 @@ c.mysql_set_character_set.restype = ctypes.c_int
 
 c.mysql_close.argtypes = [MYSQL_P]
 c.mysql_close.restype = None
+
+c.mysql_free_result.argtypes = [MYSQL_RES_P]
+c.mysql_free_result.restype = None

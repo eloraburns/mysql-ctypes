@@ -36,6 +36,7 @@ class Cursor(object):
 
     def _clear(self):
         if self._result is not None:
+            self._result.close()
             self._result = None
 
     def _query(self, query):
@@ -237,6 +238,11 @@ class Result(object):
         if self.rows is None:
             raise self.cursor.connection.ProgrammingError("Can't %s from a "
                 "query with no result rows" % meth)
+
+    def close(self):
+        if self._result:
+            libmysql.c.mysql_free_result(self._result)
+        self._result = None
 
     def flush(self):
         if self._result:
