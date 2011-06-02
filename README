@@ -1,0 +1,7 @@
+mysql-ctypes
+============
+
+A ``ctypes`` implementation of a PEP 249 (DB API 2.0) compliant database
+driver. It is importable as ``MySQLdb`` for compatibility with the extremely
+common C-extension, by the same name. It is tested under CPython 2.6, CPython
+2.7, and PyPy 1.5.
