@@ -76,6 +76,12 @@ class TestCursor(BaseMySQLTests):
             # ~1 in 60 chance of spurious failure, i'll take those odds
             assert row[0].minute == now.minute
 
+    def test_date(self, connection):
+        with contextlib.closing(connection.cursor()) as cur:
+            cur.execute("SELECT CURDATE()")
+            row, = cur.fetchall()
+            assert row == (datetime.date.today(),)
+
     def test_nonexistant_table(self, connection):
         with contextlib.closing(connection.cursor()) as cur:
             with py.test.raises(connection.ProgrammingError) as cm:

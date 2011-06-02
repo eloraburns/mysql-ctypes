@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from MySQLdb.constants import field_types
 
@@ -33,6 +33,9 @@ def datetime_decoder(value):
     date, time = value.split(" ", 1)
     return datetime(*[int(part) for part in date.split("-") + time.split(":")])
 
+def date_decoder(value):
+    return date(*[int(part) for part in value.split("-")])
+
 _simple_field_decoders = {
     field_types.LONG: int,
     field_types.LONGLONG: int,
@@ -40,6 +43,7 @@ _simple_field_decoders = {
     field_types.STRING: str,
     field_types.BLOB: unicode,
     field_types.DATETIME: datetime_decoder,
+    field_types.DATE: date_decoder,
 }
 
 def fallback_decoder(field):
