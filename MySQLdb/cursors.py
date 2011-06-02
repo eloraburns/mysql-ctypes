@@ -41,6 +41,7 @@ class Cursor(object):
         if self._result is not None:
             self._result.close()
             self._result = None
+        self.rowcount = -1
 
     def _query(self, query):
         self._executed = query
@@ -190,6 +191,11 @@ class Result(object):
         self.description = None
         self.rows = None
         self.row_index = 0
+        # TOOD: this is a hack, find a better way.
+        if self.cursor._executed.upper().startswith("CREATE"):
+            cursor.rowcount = -1
+        else:
+            cursor.rowcount = libmysql.c.mysql_affected_rows(cursor.connection._db)
         if not self._result:
             cursor.lastrowid = libmysql.c.mysql_insert_id(cursor.connection._db)
             return

@@ -3,6 +3,9 @@ from datetime import datetime
 from MySQLdb.constants import field_types
 
 
+def literal(value):
+    return lambda conn, obj: value
+
 def object_to_quoted_sql(connection, obj):
     if hasattr(obj, "__unicode__"):
         return unicode_to_sql(connection, obj)
@@ -10,13 +13,18 @@ def object_to_quoted_sql(connection, obj):
 
 def none_encoder(obj):
     if obj is None:
-        return lambda connection, obj: "NULL"
+        return literal("NULL")
+
+def literal_encoder(obj):
+    if isinstance(obj, int):
+        return literal(str(obj))
 
 def fallback_encoder(obj):
     return object_to_quoted_sql
 
 DEFAULT_ENCODERS = [
     none_encoder,
+    literal_encoder,
     fallback_encoder,
 ]
 

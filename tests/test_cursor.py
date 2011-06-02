@@ -81,6 +81,20 @@ class TestCursor(BaseMySQLTests):
                 cur.execute("DESCRIBE t")
             assert cm.value.args[0] == 1146
 
+    def test_rowcount(self, connection):
+        with self.create_table(connection, "people", age="INT"):
+            with contextlib.closing(connection.cursor()) as cur:
+                cur.execute("DESCRIBE people")
+                assert cur.rowcount == 1
+
+    def test_limit(self, connection):
+        with self.create_table(connection, "people", age="INT"):
+            with contextlib.closing(connection.cursor()) as cur:
+                cur.executemany("INSERT INTO people (age) VALUES (%s)", [(10,), (11,)])
+                cur.execute("SELECT * FROM people ORDER BY age LIMIT %s", (1,))
+                rows = cur.fetchall()
+                assert rows == [(10,)]
+
 class TestDictCursor(BaseMySQLTests):
     def test_fetchall(self, connection):
         with self.create_table(connection, "people", name="VARCHAR(20)", age="INT"):
