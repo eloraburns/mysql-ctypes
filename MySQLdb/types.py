@@ -11,7 +11,10 @@ class FieldType(object):
         return other in self.values
 
 
-BINARY = FieldType()
+BINARY = FieldType(
+    field_types.BLOB, field_types.LONG_BLOB, field_types.MEDIUM_BLOB,
+    field_types.TINY_BLOB
+)
 DATETIME = FieldType()
 NUMBER = FieldType()
 ROWID = FieldType()
