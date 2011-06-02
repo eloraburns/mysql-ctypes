@@ -13,8 +13,10 @@ class TestCursor(BaseMySQLTests):
     def assert_roundtrips(self, connection, obj):
         with contextlib.closing(connection.cursor()) as cur:
             cur.execute("SELECT %s", (obj,))
-            rows, = cur.fetchall()
-            assert rows == (obj,)
+            row, = cur.fetchall()
+            val, = row
+            assert type(val) is type(obj)
+            assert val == obj
 
     def test_basic_execute(self, connection):
         with self.create_table(connection, "things", name="VARCHAR(20)"):
@@ -90,6 +92,7 @@ class TestCursor(BaseMySQLTests):
 
     def test_binary(self, connection):
         self.assert_roundtrips(connection, "".join(chr(x) for x in xrange(255)))
+        self.assert_roundtrips(connection, 'm\xf2\r\n')
 
     def test_blob(self, connection):
         with self.create_table(connection, "people", name="BLOB"):

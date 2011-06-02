@@ -40,7 +40,8 @@ DEFAULT_ENCODERS = [
 
 def unicode_decoder(connection, field):
     if field[1] == field_types.BLOB:
-        return lambda value: value.decode(connection.character_set_name())
+        char_set = connection.character_set_name()
+        return lambda value: value.decode(char_set)
 
 def datetime_decoder(value):
     date, time = value.split(" ", 1)
