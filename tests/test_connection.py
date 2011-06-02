@@ -21,3 +21,6 @@ class TestConnection(BaseMySQLTests):
         assert not connection.closed
         connection.close()
         assert connection.closed
+
+    def test_string_literal(self, connection):
+        assert connection.string_literal(3) == "'3'"

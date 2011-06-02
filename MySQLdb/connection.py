@@ -95,6 +95,7 @@ class Connection(object):
         return cursor_class(self, encoders=encoders, decoders=decoders)
 
     def string_literal(self, obj):
+        obj = str(obj)
         buf = create_string_buffer(len(obj) * 2)
         length = libmysql.c.mysql_real_escape_string(self._db, buf, obj, len(obj))
         return "'%s'" % string_at(buf, length)
