@@ -21,6 +21,13 @@ def pytest_addoption(parser):
 
 def pytest_funcarg__connection(request):
     option = request.config.option
-    return MySQLdb.connect(
+    conn = MySQLdb.connect(
         host=option.mysql_host, user=option.mysql_user, db=option.mysql_database
     )
+
+    def close_conn():
+        if not conn.closed:
+            conn.close()
+
+    request.addfinalizer(close_conn)
+    return conn
