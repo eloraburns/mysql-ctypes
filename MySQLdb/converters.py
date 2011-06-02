@@ -37,11 +37,15 @@ def date_decoder(value):
     return date(*[int(part) for part in value.split("-")])
 
 _simple_field_decoders = {
+    field_types.TINY: int,
     field_types.LONG: int,
     field_types.LONGLONG: int,
+
     field_types.VAR_STRING: str,
     field_types.STRING: str,
+
     field_types.BLOB: unicode,
+
     field_types.DATETIME: datetime_decoder,
     field_types.DATE: date_decoder,
 }
