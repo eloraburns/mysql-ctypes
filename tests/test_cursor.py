@@ -91,6 +91,14 @@ class TestCursor(BaseMySQLTests):
     def test_binary(self, connection):
         self.assert_roundtrips(connection, "".join(chr(x) for x in xrange(255)))
 
+    def test_blob(self, connection):
+        with self.create_table(connection, "people", name="BLOB"):
+            with contextlib.closing(connection.cursor()) as cur:
+                cur.execute("INSERT INTO people (name) VALUES (%s)", ("Joe",))
+                cur.execute("SELECT * FROM people")
+                row, = cur.fetchall()
+                assert row == ("Joe",)
+
     def test_nonexistant_table(self, connection):
         with contextlib.closing(connection.cursor()) as cur:
             with py.test.raises(connection.ProgrammingError) as cm:

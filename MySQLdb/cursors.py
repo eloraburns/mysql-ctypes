@@ -59,7 +59,7 @@ class Cursor(object):
 
     def _get_decoder(self, val):
         for decoder in self.decoders:
-            res = decoder(val)
+            res = decoder(self.connection, val)
             if res:
                 return res
 

@@ -38,6 +38,10 @@ DEFAULT_ENCODERS = [
 ]
 
 
+def unicode_decoder(connection, field):
+    if field[1] == field_types.BLOB:
+        return lambda value: value.decode(connection.character_set_name())
+
 def datetime_decoder(value):
     date, time = value.split(" ", 1)
     return datetime(*[int(part) for part in date.split("-") + time.split(":")])
@@ -53,15 +57,14 @@ _simple_field_decoders = {
     field_types.VAR_STRING: str,
     field_types.STRING: str,
 
-    field_types.BLOB: unicode,
-
     field_types.DATETIME: datetime_decoder,
     field_types.DATE: date_decoder,
 }
 
-def fallback_decoder(field):
+def fallback_decoder(connection, field):
     return _simple_field_decoders.get(field[1])
 
 DEFAULT_DECODERS = [
+    unicode_decoder,
     fallback_decoder,
 ]
