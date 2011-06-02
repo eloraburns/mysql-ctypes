@@ -13,6 +13,8 @@ apilevel = "2.0"
 paramstyle = "pyformat"
 # Multiple threads can use the module, but not the connections.
 threadsafety = 1
+# Approximately the MySQLdb version we implement.
+version_info = (1, 2, 3)
 
 
 def Binary(x):
