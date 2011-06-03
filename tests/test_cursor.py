@@ -1,5 +1,6 @@
 import contextlib
 import datetime
+import warnings
 
 import py
 
@@ -138,6 +139,15 @@ class TestCursor(BaseMySQLTests):
                 cur.execute("INSERT INTO people (age) VALUES (20)")
                 cur.execute("UPDATE people SET age = 20 WHERE age = 20")
                 assert cur.rowcount == 1
+
+    def test_broken_execute(self, connection):
+        with contextlib.closing(connection.cursor()) as cursor:
+            with warnings.catch_warnings(record=True) as log:
+                cursor.execute("SELECT %s", "hello")
+                row, = cursor.fetchall()
+                assert row == ("hello",)
+                msg, = log
+                assert msg.category is UserWarning
 
 class TestDictCursor(BaseMySQLTests):
     def test_fetchall(self, connection):

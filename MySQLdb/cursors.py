@@ -1,6 +1,7 @@
 import collections
 import itertools
 import re
+import warnings
 import weakref
 
 from MySQLdb import libmysql
@@ -75,6 +76,10 @@ class Cursor(object):
                 (key, self._get_encoder(value)(self.connection, value))
                 for key, value in args.iteritems()
             )
+        elif isinstance(args, str):
+            warnings.warn("You should pass either a tuple or a mapping to "
+                "execute(), not a string")
+            return self._get_encoder(args)(self.connection, args)
         raise self.connection.NotSupportedError("Unexpected type to "
             "execute/executemany for args: %s" % args)
 
