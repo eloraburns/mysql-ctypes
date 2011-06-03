@@ -232,6 +232,10 @@ class Result(object):
                 r[i] = None
             else:
                 val = "".join([row[i][j] for j in xrange(lengths[i])])
+                if decoder is None:
+                    raise self.cursor.connection.InternalError("No decoder for"
+                        " type %s, value: %s" % (self.description[i][1], val)
+                    )
                 r[i] = decoder(val)
 
         return tuple(r)
