@@ -133,7 +133,7 @@ class Cursor(object):
 
         query = "SELECT %s(%s)" % (procname, ",".join(["%s"] * len(args)))
         if isinstance(query, unicode):
-            query = _query.encode(self.connection.character_set_name())
+            query = query.encode(self.connection.character_set_name())
         query %= self._escape_data(args)
         self._query(query)
         return args

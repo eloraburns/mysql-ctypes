@@ -1,5 +1,5 @@
 import contextlib
-from ctypes import pointer, create_string_buffer, string_at
+from ctypes import addressof, cast, create_string_buffer, string_at, c_char, c_uint, POINTER
 
 from MySQLdb import cursors, libmysql, converters
 from MySQLdb.constants import error_codes
@@ -18,14 +18,24 @@ class Connection(object):
         ProgrammingError, NotSupportedError)
 
     def __init__(self, host=None, user=None, passwd=None, db=None, port=0,
-        client_flag=0, charset=None, init_command=None, sql_mode=None,
-        encoders=None, decoders=None, use_unicode=True):
+        client_flag=0, charset=None, init_command=None, connect_timeout=None,
+        sql_mode=None, encoders=None, decoders=None, use_unicode=True):
 
         self._db = libmysql.c.mysql_init(None)
 
+        if connect_timeout is not None:
+            connect_timeout = c_uint(connect_timeout)
+            res = libmysql.c.mysql_options(self._db,
+                libmysql.MYSQL_OPT_CONNECT_TIMEOUT,
+                cast(addressof(connect_timeout), POINTER(c_char))
+            )
+            if res:
+                self._exception()
         if init_command is not None:
-            res = libmysql.c.mysql_options(self._db, libmysql.MYSQL_INIT_COMMAND, init_flag)
-            if not res:
+            res = libmysql.c.mysql_options(self._db,
+                libmysql.MYSQL_INIT_COMMAND, init_command
+            )
+            if res:
                 self._exception()
 
         res = libmysql.c.mysql_real_connect(self._db, host, user, passwd, db, port, None, client_flag)

@@ -14,7 +14,7 @@ def unicode_to_quoted_sql(connection, obj):
 
 def object_to_quoted_sql(connection, obj):
     if hasattr(obj, "__unicode__"):
-        return unicode_to_sql(connection, obj)
+        return unicode_to_quoted_sql(connection, unicode(obj))
     return connection.string_literal(str(obj))
 
 def none_encoder(obj):
