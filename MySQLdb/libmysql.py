@@ -33,7 +33,7 @@ class MYSQL_FIELD(ctypes.Structure):
         ("flags", ctypes.c_uint),
         ("decimals", ctypes.c_uint),
         ("charsetnr", ctypes.c_uint),
-        ("type", ctypes.c_int),
+        ("type", ctypes.c_uint),
         ("extension", ctypes.c_void_p),
     ]
 MYSQL_FIELD_P = ctypes.POINTER(MYSQL_FIELD)
