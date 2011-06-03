@@ -1,4 +1,5 @@
 from datetime import datetime, date, time, timedelta
+from decimal import Decimal
 
 
 from MySQLdb.constants import field_types
@@ -67,6 +68,8 @@ _simple_field_decoders = {
     field_types.TINY: int,
     field_types.LONG: int,
     field_types.LONGLONG: int,
+
+    field_types.NEWDECIMAL: Decimal,
 
     field_types.VAR_STRING: str,
     field_types.STRING: str,
