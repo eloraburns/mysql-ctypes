@@ -1,4 +1,5 @@
 import ctypes
+from ctypes.util import find_library
 
 
 class MYSQL(ctypes.Structure):
@@ -37,7 +38,7 @@ class MYSQL_FIELD(ctypes.Structure):
     ]
 MYSQL_FIELD_P = ctypes.POINTER(MYSQL_FIELD)
 
-c = ctypes.CDLL("libmysqlclient.so")
+c = ctypes.CDLL(find_library("mysqlclient"))
 
 c.mysql_init.argtypes = [MYSQL_P]
 c.mysql_init.restype = MYSQL_P
