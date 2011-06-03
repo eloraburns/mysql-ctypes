@@ -41,9 +41,7 @@ DEFAULT_ENCODERS = [
 
 
 def unicode_decoder(connection, field):
-    if field[1] not in [
-        field_types.BLOB, field_types.STRING, field_types.VAR_STRING
-    ]:
+    if field[1] not in [field_types.BLOB]:
         return
 
     # Magic binary charset
@@ -75,6 +73,9 @@ _simple_field_decoders = {
     field_types.DOUBLE: float,
 
     field_types.NEWDECIMAL: Decimal,
+
+    field_types.VAR_STRING: str,
+    field_types.STRING: str,
 
     field_types.DATETIME: datetime_decoder,
     field_types.DATE: date_decoder,

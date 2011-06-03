@@ -1,5 +1,3 @@
-# coding: utf-8
-
 import contextlib
 import datetime
 
@@ -98,6 +96,10 @@ class TestCursor(BaseMySQLTests):
             row, = cur.fetchall()
             # TODO: more detailed tests, right now we're basically going off
             # what makes SQLAlchemy tests pass
+
+    def test_binary(self, connection):
+        self.assert_roundtrips(connection, "".join(chr(x) for x in xrange(255)))
+        self.assert_roundtrips(connection, 'm\xf2\r\n')
 
     def test_blob(self, connection):
         with self.create_table(connection, "people", name="BLOB"):
