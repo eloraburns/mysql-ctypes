@@ -238,6 +238,10 @@ class Result(object):
                 r[i] = None
             else:
                 val = "".join([row[i][j] for j in xrange(lengths[i])])
+                # TODO: This is a hack for the fact that description sometimes
+                # comes back invalid, unsure what to do for the moment.
+                if self.description[i][1] > 1000:
+                    decoder = str
                 if decoder is None:
                     raise self.cursor.connection.InternalError("No decoder for"
                         " type %s, value: %s" % (self.description[i][1], val)
