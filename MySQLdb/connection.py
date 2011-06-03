@@ -21,14 +21,15 @@ class Connection(object):
         decoders=None, use_unicode=True):
 
         self._db = libmysql.c.mysql_init(None)
-        res = libmysql.c.mysql_real_connect(self._db, host, user, passwd, db, port, None, client_flag)
-        if not res:
-            self._exception()
 
         if init_command is not None:
             res = libmysql.c.mysql_options(self._db, libmysql.MYSQL_INIT_COMMAND, init_flag)
             if not res:
                 self._exception()
+
+        res = libmysql.c.mysql_real_connect(self._db, host, user, passwd, db, port, None, client_flag)
+        if not res:
+            self._exception()
 
         if encoders is None:
             encoders = converters.DEFAULT_ENCODERS
