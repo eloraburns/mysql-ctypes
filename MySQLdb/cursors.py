@@ -113,8 +113,11 @@ class Cursor(object):
             query = query.encode(self.connection.character_set_name())
         matched = INSERT_VALUES.match(query)
         if not matched:
+            rowcount = 0
             for arg in args:
                 self.execute(query, arg)
+                rowcount += self.rowcount
+            self.rowcount = rowcount
         else:
             start, values, end = matched.group("start", "values", "end")
             sql_params = [
