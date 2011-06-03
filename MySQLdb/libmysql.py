@@ -38,6 +38,10 @@ class MYSQL_FIELD(ctypes.Structure):
     ]
 MYSQL_FIELD_P = ctypes.POINTER(MYSQL_FIELD)
 
+# Hardcoded based on the value I found on two different Linux systems, bad: no
+# cookies
+MYSQL_INIT_COMMAND = 3
+
 c = ctypes.CDLL(find_library("mysqlclient"))
 
 c.mysql_init.argtypes = [MYSQL_P]
@@ -117,3 +121,6 @@ c.mysql_free_result.restype = None
 
 c.mysql_character_set_name.argtypes = [MYSQL_P]
 c.mysql_character_set_name.restype = ctypes.c_char_p
+
+# Second thing is an enum, it looks to be a long on Linux systems.
+c.mysql_options.argtypes = [MYSQL_P, ctypes.c_long, ctypes.c_char_p]

@@ -17,12 +17,18 @@ class Connection(object):
         ProgrammingError, NotSupportedError)
 
     def __init__(self, host=None, user=None, db=None, port=0, client_flag=0,
-        charset=None, encoders=None, decoders=None, use_unicode=True):
+        charset=None, init_command=None, encoders=None, decoders=None,
+        use_unicode=True):
 
         self._db = libmysql.c.mysql_init(None)
         res = libmysql.c.mysql_real_connect(self._db, host, user, None, db, port, None, client_flag)
         if not res:
             self._exception()
+
+        if init_command is not None:
+            res = libmysql.c.mysql_options(self._db, libmysql.MYSQL_INIT_COMMAND, init_flag)
+            if not res:
+                self._exception()
 
         if encoders is None:
             encoders = converters.DEFAULT_ENCODERS
