@@ -1,3 +1,4 @@
+import contextlib
 from ctypes import pointer, create_string_buffer, string_at
 
 from MySQLdb import cursors, libmysql, converters
@@ -17,8 +18,8 @@ class Connection(object):
         ProgrammingError, NotSupportedError)
 
     def __init__(self, host=None, user=None, passwd=None, db=None, port=0,
-        client_flag=0, charset=None, init_command=None, encoders=None,
-        decoders=None, use_unicode=True):
+        client_flag=0, charset=None, init_command=None, sql_mode=None,
+        encoders=None, decoders=None, use_unicode=True):
 
         self._db = libmysql.c.mysql_init(None)
 
@@ -38,11 +39,16 @@ class Connection(object):
         self.encoders = encoders
         self.decoders = decoders
 
-        self.autocommit(False)
         if charset is not None:
             res = libmysql.c.mysql_set_character_set(self._db, charset)
             if res:
                 self._exception()
+
+        if sql_mode is not None:
+            with contextlib.closing(self.cursor()) as cursor:
+                cursor.execute("SET SESSION sql_mode=%s", (sql_mode,))
+
+        self.autocommit(False)
 
     def __del__(self):
         if not self.closed:
