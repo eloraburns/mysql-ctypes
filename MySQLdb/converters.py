@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime, date, time
 
 from MySQLdb.constants import field_types
 
@@ -51,10 +51,16 @@ def unicode_decoder(connection, field):
 
 def datetime_decoder(value):
     date, time = value.split(" ", 1)
-    return datetime(*[int(part) for part in date.split("-") + time.split(":")])
+    return datetime.combine(
+        date_decoder(date),
+        time_decoder(time),
+    )
 
 def date_decoder(value):
     return date(*[int(part) for part in value.split("-")])
+
+def time_decoder(value):
+    return time(*[int(part) for part in value.split(":")])
 
 _simple_field_decoders = {
     field_types.TINY: int,
@@ -66,6 +72,7 @@ _simple_field_decoders = {
 
     field_types.DATETIME: datetime_decoder,
     field_types.DATE: date_decoder,
+    field_types.TIME: time_decoder,
 }
 
 def fallback_decoder(connection, field):

@@ -90,6 +90,15 @@ class TestCursor(BaseMySQLTests):
             row, = cur.fetchall()
             assert row == (datetime.date.today(),)
 
+    def test_time(self, connection):
+        with contextlib.closing(connection.cursor()) as cur:
+            cur.execute("SELECT CURTIME()")
+            row, = cur.fetchall()
+            val, = row
+            now = datetime.datetime.now()
+            assert val.hour == now.hour
+            assert val.minute == now.minute
+
     def test_binary(self, connection):
         self.assert_roundtrips(connection, "".join(chr(x) for x in xrange(255)))
         self.assert_roundtrips(connection, 'm\xf2\r\n')
