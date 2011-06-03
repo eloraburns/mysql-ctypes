@@ -64,6 +64,11 @@ def date_decoder(value):
 def time_decoder(value):
     return timedelta(*[int(part) for part in value.split(":")])
 
+def timestamp_decoder(value):
+    if " " in value:
+        return datetime_decoder(value)
+    raise NotImplementedError
+
 _simple_field_decoders = {
     field_types.TINY: int,
     field_types.LONG: int,
@@ -81,6 +86,7 @@ _simple_field_decoders = {
     field_types.DATETIME: datetime_decoder,
     field_types.DATE: date_decoder,
     field_types.TIME: time_decoder,
+    field_types.TIMESTAMP: timestamp_decoder,
 }
 
 def fallback_decoder(connection, field):
