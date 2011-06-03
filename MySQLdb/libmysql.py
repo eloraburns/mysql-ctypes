@@ -38,8 +38,9 @@ class MYSQL_FIELD(ctypes.Structure):
     ]
 MYSQL_FIELD_P = ctypes.POINTER(MYSQL_FIELD)
 
-# Hardcoded based on the value I found on two different Linux systems, bad: no
+# Hardcoded based on the values I found on two different Linux systems, bad: no
 # cookies
+MYSQL_OPT_CONNECT_TIMEOUT = 0
 MYSQL_INIT_COMMAND = 3
 
 c = ctypes.CDLL(find_library("mysqlclient"))
