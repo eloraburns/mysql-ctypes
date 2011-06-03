@@ -183,6 +183,15 @@ class DictCursor(Cursor):
             row = self._make_row(row)
         return row
 
+_Description = collections.namedtuple("Description", [
+    "name", "type_code", "display_size", "internal_size", "precision", "scale", "null_ok"
+])
+class Description(_Description):
+    def __new__(cls, *args, **kwargs):
+        charsetnr = kwargs.pop("charsetnr")
+        self = super(Description, cls).__new__(cls, *args, **kwargs)
+        self.charsetnr = charsetnr
+        return self
 
 class Result(object):
     def __init__(self, cursor):
@@ -232,14 +241,15 @@ class Result(object):
         fields = libmysql.c.mysql_fetch_fields(self._result)
         d = [None] * n
         for i in xrange(n):
-            d[i] = (
+            d[i] = Description(
                 fields[i].name,
                 fields[i].type,
                 fields[i].max_length,
                 fields[i].length,
                 fields[i].length,
                 fields[i].decimals,
-                None
+                None,
+                charsetnr=fields[i].charsetnr
             )
         return tuple(d)
 

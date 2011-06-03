@@ -97,10 +97,12 @@ class TestCursor(BaseMySQLTests):
     def test_blob(self, connection):
         with self.create_table(connection, "people", name="BLOB"):
             with contextlib.closing(connection.cursor()) as cur:
-                cur.execute("INSERT INTO people (name) VALUES (%s)", ("Joe",))
+                cur.execute("INSERT INTO people (name) VALUES (%s)", ("".join(chr(x) for x in xrange(255)),))
                 cur.execute("SELECT * FROM people")
                 row, = cur.fetchall()
-                assert row == ("Joe",)
+                val, = row
+                assert val == "".join(chr(x) for x in xrange(255))
+                assert type(val) is str
 
     def test_nonexistant_table(self, connection):
         with contextlib.closing(connection.cursor()) as cur:

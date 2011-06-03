@@ -39,9 +39,15 @@ DEFAULT_ENCODERS = [
 
 
 def unicode_decoder(connection, field):
-    if field[1] == field_types.BLOB:
-        char_set = connection.character_set_name()
-        return lambda value: value.decode(char_set)
+    if field[1] not in [field_types.BLOB]:
+        return
+
+    # Magic binary charset
+    if field.charsetnr == 63:
+        return str
+
+    charset = connection.character_set_name()
+    return lambda value: value.decode(charset)
 
 def datetime_decoder(value):
     date, time = value.split(" ", 1)
