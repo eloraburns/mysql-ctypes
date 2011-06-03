@@ -8,6 +8,8 @@ class Connection(object):
     MYSQL_ERROR_MAP = {
         error_codes.PARSE_ERROR: "ProgrammingError",
         error_codes.NO_SUCH_TABLE: "ProgrammingError",
+
+        error_codes.ROW_IS_REFERENCED_2: "IntegrityError",
     }
 
     from MySQLdb.exceptions import (Warning, Error, InterfaceError,

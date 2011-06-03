@@ -71,6 +71,9 @@ _simple_field_decoders = {
     field_types.LONG: int,
     field_types.LONGLONG: int,
 
+    field_types.FLOAT: float,
+    field_types.DOUBLE: float,
+
     field_types.NEWDECIMAL: Decimal,
 
     field_types.DATETIME: datetime_decoder,
