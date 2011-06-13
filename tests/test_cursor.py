@@ -142,12 +142,13 @@ class TestCursor(BaseMySQLTests):
 
     def test_broken_execute(self, connection):
         with contextlib.closing(connection.cursor()) as cursor:
-            with warnings.catch_warnings(record=True) as log:
-                cursor.execute("SELECT %s", "hello")
-                row, = cursor.fetchall()
-                assert row == ("hello",)
-                msg, = log
-                assert msg.category is UserWarning
+            cursor.execute("SELECT %s", "hello")
+            row, = cursor.fetchall()
+            assert row == ("hello",)
+
+            cursor.execute("SELECT %s, %s", ["Hello", "World"])
+            row, = cursor.fetchall()
+            assert row == ("Hello", "World")
 
 class TestDictCursor(BaseMySQLTests):
     def test_fetchall(self, connection):

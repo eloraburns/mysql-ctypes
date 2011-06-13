@@ -67,7 +67,10 @@ class Cursor(object):
 
     def _escape_data(self, args):
         self._check_closed()
-        if isinstance(args, tuple):
+        # MySQLdb's argument escaping rules are completely at odds with the
+        # DB-API spec, unfortunately the project this codebase was originally
+        # written for uses those features, so we emulate them.
+        if isinstance(args, collections.Sequence) and not isinstance(args, basestring):
             return tuple(
                 self._get_encoder(arg)(self.connection, arg)
                 for arg in args
@@ -78,8 +81,6 @@ class Cursor(object):
                 for key, value in args.iteritems()
             )
         else:
-            warnings.warn("You should pass either a tuple or a mapping to "
-                "execute(), not a %s" % type(args))
             return self._get_encoder(args)(self.connection, args)
 
     @property
