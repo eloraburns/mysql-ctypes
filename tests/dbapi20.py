@@ -138,7 +138,7 @@ class DatabaseAPI20Test(unittest.TestCase):
                 try: 
                     cur.execute(ddl)
                     con.commit()
-                except self.driver.Error: 
+                except self.driver.Error, e: 
                     if not self.is_table_does_not_exit(e):
                         raise
         finally:
