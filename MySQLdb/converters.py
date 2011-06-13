@@ -71,6 +71,7 @@ def timestamp_decoder(value):
 
 _simple_field_decoders = {
     field_types.TINY: int,
+    field_types.SHORT: int,
     field_types.LONG: int,
     field_types.LONGLONG: int,
     field_types.YEAR: int,
