@@ -43,15 +43,17 @@ MYSQL_FIELD_P = ctypes.POINTER(MYSQL_FIELD)
 MYSQL_OPT_CONNECT_TIMEOUT = 0
 MYSQL_INIT_COMMAND = 3
 
-loc = None
+c = None
 # Prefer the higher version, obscure.
 for lib in ["libmysqlclient.so.16", "mysqlclient"]:
-    loc = find_library(lib)
-    if loc is not None:
+    try:
+        c = ctypes.CDLL(lib)
+    except OSError:
+        pass
+    else:
         break
-if loc is None:
+if c is None:
     raise ImportError("Can't find a libmysqlclient")
-c = ctypes.CDLL(loc)
 
 c.mysql_init.argtypes = [MYSQL_P]
 c.mysql_init.restype = MYSQL_P
