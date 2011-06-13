@@ -1,5 +1,6 @@
 import contextlib
-from ctypes import addressof, cast, create_string_buffer, string_at, c_char, c_uint, POINTER
+from ctypes import (addressof, cast, create_string_buffer, string_at, c_char,
+    c_uint, POINTER)
 
 from MySQLdb import cursors, libmysql, converters
 from MySQLdb.constants import error_codes

@@ -139,9 +139,8 @@ class DatabaseAPI20Test(unittest.TestCase):
                     cur.execute(ddl)
                     con.commit()
                 except self.driver.Error: 
-                    # Assume table didn't exist. Other tests will check if
-                    # execute is busted.
-                    pass
+                    if not self.is_table_does_not_exit(e):
+                        raise
         finally:
             con.close()
 

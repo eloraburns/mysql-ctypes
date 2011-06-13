@@ -1,4 +1,5 @@
 import collections
+import ctypes
 import itertools
 import re
 import warnings
@@ -47,7 +48,7 @@ class Cursor(object):
     def _query(self, query):
         self._executed = query
         self.connection._check_closed()
-        r = libmysql.c.mysql_real_query(self.connection._db, query, len(query))
+        r = libmysql.c.mysql_real_query(self.connection._db, ctypes.c_char_p(query), len(query))
         if r:
             self.connection._exception()
         self._result = Result(self)

@@ -18,6 +18,9 @@ class MySQLDBAPI20Tests(dbapi20.DatabaseAPI20Test):
             "db": option.mysql_database,
         }
 
+    def is_table_does_not_exit(self, exc):
+        return exc.args[0] == 1051
+
     def test_nextset(self):
         py.test.skip("No idea what this is, skipping for now")
 
