@@ -150,6 +150,13 @@ class TestCursor(BaseMySQLTests):
             row, = cursor.fetchall()
             assert row == ("Hello", "World")
 
+    def test_integrity_error(self, connection):
+        with self.create_table(connection, "people", uid="INT", primary_key="uid"):
+            with contextlib.closing(connection.cursor()) as cursor:
+                cursor.execute("INSERT INTO people (uid) VALUES (1)")
+                with py.test.raises(connection.IntegrityError):
+                    cursor.execute("INSERT INTO people (uid) VALUES (1)")
+
 class TestDictCursor(BaseMySQLTests):
     def test_fetchall(self, connection):
         with self.create_table(connection, "people", name="VARCHAR(20)", age="INT"):
