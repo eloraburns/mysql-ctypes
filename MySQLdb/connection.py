@@ -11,6 +11,8 @@ class Connection(object):
         error_codes.PARSE_ERROR: "ProgrammingError",
         error_codes.NO_SUCH_TABLE: "ProgrammingError",
 
+        error_codes.DATA_TOO_LONG: "DataError",
+
         error_codes.DUP_ENTRY: "IntegrityError",
         error_codes.ROW_IS_REFERENCED_2: "IntegrityError",
     }
