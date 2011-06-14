@@ -18,8 +18,8 @@ class Connection(object):
     }
 
     from MySQLdb.exceptions import (Warning, Error, InterfaceError,
-        DatabaseError, OperationalError, IntegrityError, InternalError,
-        ProgrammingError, NotSupportedError)
+        DataError, DatabaseError, OperationalError, IntegrityError,
+        InternalError, ProgrammingError, NotSupportedError)
 
     def __init__(self, host=None, user=None, passwd=None, db=None, port=0,
         client_flag=0, charset=None, init_command=None, connect_timeout=None,
