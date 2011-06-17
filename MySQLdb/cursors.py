@@ -253,15 +253,16 @@ class Result(object):
         fields = libmysql.c.mysql_fetch_fields(self._result)
         d = [None] * n
         for i in xrange(n):
+            f = fields[i]
             d[i] = Description(
-                fields[i].name,
-                fields[i].type,
-                fields[i].max_length,
-                fields[i].length,
-                fields[i].length,
-                fields[i].decimals,
+                ctypes.string_at(f.name, f.name_length),
+                f.type,
+                f.max_length,
+                f.length,
+                f.length,
+                f.decimals,
                 None,
-                charsetnr=fields[i].charsetnr
+                charsetnr=f.charsetnr
             )
         return tuple(d)
 

@@ -14,13 +14,13 @@ MYSQL_ROW = ctypes.POINTER(ctypes.POINTER(ctypes.c_char))
 
 class MYSQL_FIELD(ctypes.Structure):
     _fields_ = [
-        ("name", ctypes.c_char_p),
-        ("org_name", ctypes.c_char_p),
-        ("table", ctypes.c_char_p),
-        ("org_table", ctypes.c_char_p),
-        ("db", ctypes.c_char_p),
-        ("catalog", ctypes.c_char_p),
-        ("def", ctypes.c_char_p),
+        ("name", ctypes.POINTER(ctypes.c_char)),
+        ("org_name", ctypes.POINTER(ctypes.c_char)),
+        ("table", ctypes.POINTER(ctypes.c_char)),
+        ("org_table", ctypes.POINTER(ctypes.c_char)),
+        ("db", ctypes.POINTER(ctypes.c_char)),
+        ("catalog", ctypes.POINTER(ctypes.c_char)),
+        ("def", ctypes.POINTER(ctypes.c_char)),
         ("length", ctypes.c_ulong),
         ("max_length", ctypes.c_ulong),
         ("name_length", ctypes.c_uint),
