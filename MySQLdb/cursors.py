@@ -71,15 +71,15 @@ class Cursor(object):
         # DB-API spec, unfortunately the project this codebase was originally
         # written for uses those features, so we emulate them.
         if isinstance(args, collections.Sequence) and not isinstance(args, basestring):
-            return tuple(
+            return tuple([
                 self._get_encoder(arg)(self.connection, arg)
                 for arg in args
-            )
+            ])
         elif isinstance(args, collections.Mapping):
-            return dict(
+            return dict([
                 (key, self._get_encoder(value)(self.connection, value))
                 for key, value in args.iteritems()
-            )
+            ])
         else:
             return self._get_encoder(args)(self.connection, args)
 
@@ -239,11 +239,7 @@ class Result(object):
             if not row[i]:
                 r[i] = None
             else:
-                val = "".join([row[i][j] for j in xrange(lengths[i])])
-                # TODO: This is a hack for the fact that description sometimes
-                # comes back invalid, unsure what to do for the moment.
-                if self.description[i][1] > 1000:
-                    decoder = str
+                val = ctypes.string_at(row[i], lengths[i])
                 if decoder is None:
                     raise self.cursor.connection.InternalError("No decoder for"
                         " type %s, value: %s" % (self.description[i][1], val)
