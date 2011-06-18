@@ -18,7 +18,7 @@ class MySQLDBAPI20Tests(dbapi20.DatabaseAPI20Test):
             "db": option.mysql_database,
         }
 
-    def is_table_does_not_exit(self, exc):
+    def is_table_does_not_exist(self, exc):
         return exc.args[0] == 1051
 
     def test_nextset(self):
