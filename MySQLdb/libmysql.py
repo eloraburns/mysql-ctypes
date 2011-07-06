@@ -1,5 +1,4 @@
 import ctypes
-from ctypes.util import find_library
 
 
 class MYSQL(ctypes.Structure):
