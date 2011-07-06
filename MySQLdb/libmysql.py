@@ -44,7 +44,7 @@ MYSQL_INIT_COMMAND = 3
 
 c = None
 # Prefer the higher version, obscure.
-for lib in ["libmysqlclient.so.16", "mysqlclient"]:
+for lib in ["libmysqlclient.so.16", "mysqlclient", "libmysqlclient.18.dylib"]:
     try:
         c = ctypes.CDLL(lib)
     except OSError:
