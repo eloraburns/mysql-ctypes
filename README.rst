@@ -6,7 +6,7 @@ driver for use with MySQL. It is importable as ``MySQLdb`` for compatibility
 with the extremely common C-extension, by the same name. It is tested under
 CPython 2.6, CPython 2.7, and PyPy 1.5.
 
-There are a number of things to note::
+There are a number of things to note:
 
  * This was originally developed for use with PyPy, though it works with both
    CPython and PyPy, where performance is concerned it will try to favor PyPy.
