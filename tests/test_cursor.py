@@ -124,6 +124,13 @@ class TestCursor(BaseMySQLTests):
                 cur.execute("DESCRIBE people")
                 assert cur.rowcount == 1
 
+                cur.execute("DELETE FROM people WHERE age = %s", (10,))
+                assert cur.rowcount == 0
+
+                cur.executemany("INSERT INTO people (age) VALUES (%s)", [(i,) for i in xrange(5)])
+                cur.execute("DELETE FROM people WHERE age < %s", (3,))
+                assert cur.rowcount == 3
+
     def test_limit(self, connection):
         with self.create_table(connection, "people", age="INT"):
             with contextlib.closing(connection.cursor()) as cur:
