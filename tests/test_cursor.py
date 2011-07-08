@@ -98,6 +98,15 @@ class TestCursor(BaseMySQLTests):
             # TODO: more detailed tests, right now we're basically going off
             # what makes SQLAlchemy tests pass
 
+    def test_timestamp(self, connection):
+        with self.create_table(connection, "events", dt="TIMESTAMP"):
+           with contextlib.closing(connection.cursor()) as cur:
+                t = datetime.datetime.combine(datetime.datetime.today(), datetime.time(12, 20, 2))
+                cur.execute("INSERT INTO events (dt) VALUES (%s)", (t,))
+                cur.execute("SELECT dt FROM events")
+                r, = cur.fetchall()
+                assert r == (t,)
+
     def test_binary(self, connection):
         self.assert_roundtrips(connection, "".join(chr(x) for x in xrange(255)))
         self.assert_roundtrips(connection, 'm\xf2\r\n')

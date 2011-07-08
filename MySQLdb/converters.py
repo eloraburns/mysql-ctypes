@@ -1,7 +1,6 @@
 from datetime import datetime, date, time, timedelta
 from decimal import Decimal
 
-
 from MySQLdb.constants import field_types
 
 
@@ -11,31 +10,32 @@ def literal(value):
 def unicode_to_quoted_sql(connection, obj):
     return connection.string_literal(obj.encode(connection.character_set_name()))
 
-
 def object_to_quoted_sql(connection, obj):
     if hasattr(obj, "__unicode__"):
         return unicode_to_quoted_sql(connection, unicode(obj))
     return connection.string_literal(str(obj))
 
-def none_encoder(obj):
-    if obj is None:
-        return literal("NULL")
-
-def literal_encoder(obj):
-    if isinstance(obj, int):
-        return literal(str(obj))
-
-def unicode_encoder(obj):
-    if isinstance(obj, unicode):
-        return unicode_to_quoted_sql
-
 def fallback_encoder(obj):
     return object_to_quoted_sql
 
+def literal_encoder(connection, obj):
+    return str(obj)
+
+def datetime_encoder(connection, obj):
+    return connection.string_literal(obj.strftime("%Y-%m-%d %H:%M:%S"))
+
+_simple_field_encoders = {
+    type(None): lambda connection, obj: "NULL",
+    int: literal_encoder,
+    unicode: unicode_to_quoted_sql,
+    datetime: datetime_encoder,
+}
+
+def simple_encoder(obj):
+    return _simple_field_encoders.get(type(obj))
+
 DEFAULT_ENCODERS = [
-    none_encoder,
-    literal_encoder,
-    unicode_encoder,
+    simple_encoder,
     fallback_encoder,
 ]
 
