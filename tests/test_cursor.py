@@ -174,6 +174,13 @@ class TestCursor(BaseMySQLTests):
                 assert len(cursor.description) == 1
                 assert cursor.description[0][0] == "uid"
 
+    def test_executemany_return(self, connection):
+        with self.create_table(connection, "people", uid="INT"):
+            with contextlib.closing(connection.cursor()) as cursor:
+                r = cursor.executemany("INSERT INTO people (uid) VALUES (%s)", [(1,), (2,)])
+                assert r == 2
+
+
 class TestDictCursor(BaseMySQLTests):
     def test_fetchall(self, connection):
         with self.create_table(connection, "people", name="VARCHAR(20)", age="INT"):

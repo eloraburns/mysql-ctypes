@@ -131,6 +131,7 @@ class Cursor(object):
             ]
             multirow_query = start + ",\n".join(sql_params) + end
             self._query(multirow_query)
+        return self.rowcount
 
     def callproc(self, procname, args=()):
         self._check_closed()
