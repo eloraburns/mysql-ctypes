@@ -32,3 +32,9 @@ class TestConnection(BaseMySQLTests):
                 cursor.execute('SELECT "people"."age" FROM "people"')
                 rows = cursor.fetchall()
                 assert rows == []
+
+    def test_closed_error(self, connection):
+        connection.close()
+        with py.test.raises(connection.InterfaceError) as exc:
+            connection.rollback()
+        assert str(exc.value) == "(0, '')"
