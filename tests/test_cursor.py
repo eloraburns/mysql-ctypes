@@ -164,6 +164,16 @@ class TestCursor(BaseMySQLTests):
                 with py.test.raises(connection.IntegrityError):
                     cursor.execute("INSERT INTO people (uid) VALUES (1)")
 
+    def test_description(self, connection):
+        with self.create_table(connection, "people", uid="INT"):
+            with contextlib.closing(connection.cursor()) as cursor:
+                cursor.execute("DELETE FROM people WHERE uid = %s", (1,))
+                assert cursor.description is None
+
+                cursor.execute("SELECT uid FROM people")
+                assert len(cursor.description) == 1
+                assert cursor.description[0][0] == "uid"
+
 class TestDictCursor(BaseMySQLTests):
     def test_fetchall(self, connection):
         with self.create_table(connection, "people", name="VARCHAR(20)", age="INT"):
