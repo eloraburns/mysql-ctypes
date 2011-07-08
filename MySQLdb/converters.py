@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, date, time, timedelta
 from decimal import Decimal
 
@@ -62,7 +63,17 @@ def date_decoder(value):
     return date(*[int(part) for part in value.split("-")])
 
 def time_decoder(value):
-    return timedelta(*[int(part) for part in value.split(":")])
+    # MySQLdb returns a timedelta here, immitate this nonsense.
+    hours, minutes, seconds = value.split(":")
+    td = timedelta(
+        hours = int(hours),
+        minutes = int(minutes),
+        seconds = int(seconds),
+        microseconds = int(math.modf(float(seconds))[0]*1000000),
+    )
+    if hours < 0:
+        td = -td
+    return td
 
 def timestamp_decoder(value):
     if " " in value:

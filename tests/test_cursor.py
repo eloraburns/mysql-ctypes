@@ -76,14 +76,13 @@ class TestCursor(BaseMySQLTests):
             cur.fetchone()
 
     def test_datetime(self, connection):
-        with contextlib.closing(connection.cursor()) as cur:
-            cur.execute("SELECT SYSDATE()")
-            row = cur.fetchone()
-            now = datetime.datetime.now()
-            assert row[0].date() == now.date()
-            assert row[0].hour == now.hour
-            # ~1 in 60 chance of spurious failure, i'll take those odds
-            assert row[0].minute == now.minute
+        with self.create_table(connection, "events", dt="TIMESTAMP"):
+            with contextlib.closing(connection.cursor()) as cur:
+                t = datetime.datetime.combine(datetime.datetime.today(), datetime.time(12, 20, 2))
+                cur.execute("INSERT INTO events (dt) VALUES (%s)", (t,))
+                cur.execute("SELECT dt FROM events")
+                r, = cur.fetchall()
+                assert r == (t,)
 
     def test_date(self, connection):
         with contextlib.closing(connection.cursor()) as cur:
@@ -92,20 +91,15 @@ class TestCursor(BaseMySQLTests):
             assert row == (datetime.date.today(),)
 
     def test_time(self, connection):
-        with contextlib.closing(connection.cursor()) as cur:
-            cur.execute("SELECT CURTIME()")
-            row, = cur.fetchall()
-            # TODO: more detailed tests, right now we're basically going off
-            # what makes SQLAlchemy tests pass
-
-    def test_timestamp(self, connection):
-        with self.create_table(connection, "events", dt="TIMESTAMP"):
-           with contextlib.closing(connection.cursor()) as cur:
-                t = datetime.datetime.combine(datetime.datetime.today(), datetime.time(12, 20, 2))
-                cur.execute("INSERT INTO events (dt) VALUES (%s)", (t,))
-                cur.execute("SELECT dt FROM events")
+        with self.create_table(connection, "events", t="TIME"):
+            with contextlib.closing(connection.cursor()) as cur:
+                t = datetime.time(12, 20, 2)
+                cur.execute("INSERT INTO events (t) VALUES (%s)", (t,))
+                cur.execute("SELECT t FROM events")
                 r, = cur.fetchall()
-                assert r == (t,)
+                # Against all rationality, MySQLdb returns a timedelta here
+                # immitate this idiotic behavior.
+                assert r == (datetime.timedelta(hours=12, minutes=20, seconds=2),)
 
     def test_binary(self, connection):
         self.assert_roundtrips(connection, "".join(chr(x) for x in xrange(255)))
