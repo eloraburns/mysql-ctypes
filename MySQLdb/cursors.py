@@ -33,7 +33,7 @@ class Cursor(object):
 
     def _check_closed(self):
         if not self.connection or not self.connection._db:
-            raise self.connection.ProgrammingError("cursor closed")
+            raise self.connection.InterfaceError(0, "")
 
     def _check_executed(self):
         if not self._executed:
