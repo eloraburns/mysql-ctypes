@@ -11,12 +11,13 @@ from .base import BaseMySQLTests
 
 
 class TestCursor(BaseMySQLTests):
-    def assert_roundtrips(self, connection, obj):
+    def assert_roundtrips(self, connection, obj, check_type=True):
         with contextlib.closing(connection.cursor()) as cur:
             cur.execute("SELECT %s", (obj,))
             row, = cur.fetchall()
             val, = row
-            assert type(val) is type(obj)
+            if check_type:
+                assert type(val) is type(obj)
             assert val == obj
 
     def test_basic_execute(self, connection):
@@ -69,6 +70,10 @@ class TestCursor(BaseMySQLTests):
             cur.execute("SELECT %s", (None,))
             row, = cur.fetchall()
             assert row == (None,)
+
+    def test_bool(self, connection):
+        self.assert_roundtrips(connection, True, check_type=False)
+        self.assert_roundtrips(connection, False, check_type=False)
 
     def test_longlong(self, connection):
         with contextlib.closing(connection.cursor()) as cur:

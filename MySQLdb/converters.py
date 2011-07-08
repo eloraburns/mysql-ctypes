@@ -28,6 +28,7 @@ def datetime_encoder(connection, obj):
 _simple_field_encoders = {
     type(None): lambda connection, obj: "NULL",
     int: literal_encoder,
+    bool: lambda connection, obj: str(int(obj)),
     unicode: unicode_to_quoted_sql,
     datetime: datetime_encoder,
 }
