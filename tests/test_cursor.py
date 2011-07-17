@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import contextlib
 import datetime
 import warnings
@@ -187,6 +189,23 @@ class TestCursor(BaseMySQLTests):
             with contextlib.closing(connection.cursor()) as cursor:
                 r = cursor.executemany("INSERT INTO people (uid) VALUES (%s)", [(1,), (2,)])
                 assert r == 2
+
+    def test_unicode(self, connection):
+        with self.create_table(connection, "snippets", content="TEXT"):
+            with contextlib.closing(connection.cursor()) as cursor:
+                unicodedata = (u"Alors vous imaginez ma surprise, au lever du "
+                    u"jour, quand une drôle de petite voix m’a réveillé. Elle "
+                    u"disait: « S’il vous plaît… dessine-moi un mouton! »")
+                cursor.executemany("INSERT INTO snippets (content) VALUES (%s)", [
+                    (unicodedata.encode("utf-8"),),
+                    (unicodedata.encode("utf-8"),),
+                ])
+                cursor.execute("SELECT content FROM snippets LIMIT 1")
+                r, = cursor.fetchall()
+                v, = r
+                v = v.decode("utf-8")
+                assert isinstance(v, unicode)
+                assert v == unicodedata
 
 
 class TestDictCursor(BaseMySQLTests):

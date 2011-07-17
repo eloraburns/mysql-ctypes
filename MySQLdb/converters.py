@@ -42,17 +42,6 @@ DEFAULT_ENCODERS = [
 ]
 
 
-def unicode_decoder(connection, field):
-    if field[1] not in [field_types.BLOB]:
-        return
-
-    # Magic binary charset
-    if field.charsetnr == 63:
-        return str
-
-    charset = connection.character_set_name()
-    return lambda value: value.decode(charset)
-
 def datetime_decoder(value):
     date_part, time_part = value.split(" ", 1)
     return datetime.combine(
@@ -94,6 +83,7 @@ _simple_field_decoders = {
     field_types.DECIMAL: Decimal,
     field_types.NEWDECIMAL: Decimal,
 
+    field_types.BLOB: str,
     field_types.VAR_STRING: str,
     field_types.STRING: str,
 
@@ -107,6 +97,5 @@ def fallback_decoder(connection, field):
     return _simple_field_decoders.get(field[1])
 
 DEFAULT_DECODERS = [
-    unicode_decoder,
     fallback_decoder,
 ]
