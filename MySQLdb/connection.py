@@ -7,6 +7,10 @@ from MySQLdb.constants import error_codes
 
 
 class Connection(object):
+    # This alias is for use in stuff called via __del__, which needs to be sure
+    # it has a hard ref, so it isn't None'd out.
+    _mysql_close = libmysql.c.mysql_close
+
     MYSQL_ERROR_MAP = {
         error_codes.PARSE_ERROR: "ProgrammingError",
         error_codes.NO_SUCH_TABLE: "ProgrammingError",
@@ -94,7 +98,7 @@ class Connection(object):
 
     def close(self):
         self._check_closed()
-        libmysql.c.mysql_close(self._db)
+        self._mysql_close(self._db)
         self._db = None
 
     def autocommit(self, flag):
