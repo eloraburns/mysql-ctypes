@@ -15,6 +15,7 @@ class MySQLDBAPI20Tests(dbapi20.DatabaseAPI20Test):
         self.connect_kw_args = {
             "host": option.mysql_host,
             "user": option.mysql_user,
+            "passwd": option.mysql_passwd,
             "db": option.mysql_database,
         }
 

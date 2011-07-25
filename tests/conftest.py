@@ -14,6 +14,11 @@ def pytest_addoption(parser):
         dest = "mysql_user",
     )
     group.addoption(
+        "--mysql-password",
+        default = "root",
+        dest = "mysql_passwd",
+    )
+    group.addoption(
         "--mysql-database",
         default = "test_mysqldb",
         dest = "mysql_database",
@@ -25,7 +30,8 @@ def pytest_funcarg__connection(request):
     if hasattr(request.function, "connect_opts"):
         extra_kwargs = request.function.connect_opts.kwargs.copy()
     conn = MySQLdb.connect(
-        host=option.mysql_host, user=option.mysql_user, db=option.mysql_database, **extra_kwargs
+        host=option.mysql_host, user=option.mysql_user,
+        passwd=option.mysql_passwd, db=option.mysql_database, **extra_kwargs
     )
 
     def close_conn():
