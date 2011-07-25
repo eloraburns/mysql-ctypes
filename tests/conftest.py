@@ -15,7 +15,7 @@ def pytest_addoption(parser):
     )
     group.addoption(
         "--mysql-password",
-        default = "root",
+        default = None,
         dest = "mysql_passwd",
     )
     group.addoption(
